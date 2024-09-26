@@ -65,6 +65,8 @@ class Updater:
                 "name": stop.tag("name"),
                 "network": stop.tag("network"),
                 "operator": stop.tag("operator"),
+                "latitude": stop.lat(),
+                "longitude": stop.lon(),
                 "inaccurateReports": 0,
                 "routes": routes
             }

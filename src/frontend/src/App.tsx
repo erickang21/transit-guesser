@@ -1,13 +1,11 @@
 import React from 'react';
-import MainGame from "./pages/MainGame";
 import './App.css';
+import MainGamePage from "./pages/MainGamePage";
 
 function App() {
-
-
   return (
     <div className="App">
-        <MainGame />
+        <MainGamePage />
     </div>
   );
 }

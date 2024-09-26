@@ -11,6 +11,8 @@ interface MapProps {
 }
 
 export default function Map({ center, markers, zoom }: MapProps) {
+    console.log("Map is rendered with center: ", center);
+    console.log("Map is rendered with markers: ", markers)
     return (
         <div style={{width: "100vw", height: "90vw"}}>
         <MapContainer center={[center.latitude, center.longitude]} zoom={zoom || 35} scrollWheelZoom={false} >
@@ -18,10 +20,14 @@ export default function Map({ center, markers, zoom }: MapProps) {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {markers.map((marker) => (
-                <CustomMarker position={[marker.latitude, marker.longitude]}>
-                    <Popup>Take your guess!</Popup>
-                </CustomMarker>
+            {markers.length && markers.map((marker, index) => (
+                <>
+                    <CustomMarker position={[marker.latitude, marker.longitude]} key={`marker-${index}`}>
+                        <Popup>Take your guess!</Popup>
+                        <p>test marker</p>
+                    </CustomMarker>
+
+                </>
             ))}
         </MapContainer>
         </div>

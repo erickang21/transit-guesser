@@ -62,6 +62,8 @@ class Updater:
                 continue # if the stop does not have a name we are cooked
             data = {
                 "_id": stop.id(),
+                "latitude": stop.lat(),
+                "longitude": stop.lon(),
                 "name": stop.tag("name"),
                 "network": stop.tag("network"),
                 "operator": stop.tag("operator"),
@@ -115,4 +117,4 @@ if __name__ == "__main__":
     areaID = nom.query("Kitchener, Ontario").areaId()
     updater = Updater()
     updater.updateStops(areaID)
-    updater.updateRoutes(areaID)
+    #updater.updateRoutes(areaID)

@@ -2,17 +2,28 @@
 import React from "react";
 import { MapContainer, Popup, TileLayer } from "react-leaflet";
 import CustomMarker from "./CustomMarker";
+import { Coordinate } from "../types/types";
 
-export default function Map() {
+interface MapProps {
+    center: Coordinate;
+    markers: Coordinate[];
+    zoom?: number;
+}
+
+export default function Map({ center, markers, zoom }: MapProps) {
     return (
-        <MapContainer center={[43.4117746, -80.5157882]} zoom={35} scrollWheelZoom={false}>
+        <div style={{width: "100vw", height: "90vw"}}>
+        <MapContainer center={[center.latitude, center.longitude]} zoom={zoom || 35} scrollWheelZoom={false} >
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <CustomMarker position={[43.4117746, -80.5157882]}>
-                <Popup>This is a custom marker popup</Popup>
-            </CustomMarker>
+            {markers.map((marker) => (
+                <CustomMarker position={[marker.latitude, marker.longitude]}>
+                    <Popup>Take your guess!</Popup>
+                </CustomMarker>
+            ))}
         </MapContainer>
+        </div>
     );
 }

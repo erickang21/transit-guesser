@@ -1,0 +1,21 @@
+.home-page {
+    min-width: 100vw;
+    display: flex;
+    flex-direction: column;
+}
+
+.home-navbar {
+    min-width: 100vw;
+}
+
+.home-map-container {
+    max-width: 50vw;
+}
+
+.container {
+    margin-left: 0.25rem;
+}
+
+.home-navbar-element {
+    margin-left: 0.25rem;
+}

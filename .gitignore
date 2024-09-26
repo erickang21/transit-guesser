@@ -4,6 +4,9 @@
 /.idea
 /.vscode
 
+# env
+.env
+
 # dependencies
 /src/frontend/node_modules
 /src/frontend/.pnp

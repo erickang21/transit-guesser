@@ -8,7 +8,7 @@ import Container from 'react-bootstrap/Container';
 import "../css/home.css";
 import AnswerBox from "../components/AnswerBox";
 
-const Home = (): React.ReactElement => {
+const MainGame = (): React.ReactElement => {
     const data: Coordinate[] = getData();
     const [currentStops, setCurrentStops] = useState<Coordinate[]>([]);
     if (!currentStops.length) {
@@ -46,4 +46,4 @@ const Home = (): React.ReactElement => {
     )
 }
 
-export default Home;
+export default MainGame;

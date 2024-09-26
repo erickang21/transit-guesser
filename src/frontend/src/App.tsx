@@ -1,5 +1,5 @@
 import React from 'react';
-import Home from "./pages/home";
+import MainGame from "./pages/MainGame";
 import './App.css';
 
 function App() {
@@ -7,7 +7,7 @@ function App() {
 
   return (
     <div className="App">
-        <Home />
+        <MainGame />
     </div>
   );
 }

@@ -1,14 +1,20 @@
+import os
 import OSMPythonTools.nominatim as nm
 import OSMPythonTools.overpass as op
 import OSMPythonTools.api as ap
 import pymongo as pm
+from dotenv import load_dotenv
+from pathlib import Path
+
+dotenv_path = Path('../../../.env')
+load_dotenv(dotenv_path=dotenv_path)
 
 class Updater:
 
     def __init__(self):
         self.ovp = op.Overpass()
         self.api = ap.Api() #get the query self.api (simpler self.api for when we want to find individual nodes, rather than by attribute)
-        self.pym = pm.MongoClient("mongodb+srv://erickang21:bananaboy21@transitguesser.yx6hg.mongodb.net/?retryWrites=true&w=majority&appName=transitguesser")
+        self.pym = pm.MongoClient(os.getenv("mongodb"))
         self.db = self.pym["transitguesser"]
         self.routes_collection = self.db["routes"]
         self.stops_collection = self.db["stops"]
@@ -59,7 +65,8 @@ class Updater:
                 "name": stop.tag("name"),
                 "network": stop.tag("network"),
                 "operator": stop.tag("operator"),
-                "inaccurateReports": 0
+                "inaccurateReports": 0,
+                "routes": routes
             }
             self.stops_collection.update_one({ "_id": stop.id() }, { "$set": data }, upsert=True)
             print(f"Successfully updated/inserted routes for {stop.tag('operator')} stop {stop.tag('name')}.")

@@ -12,3 +12,52 @@
     padding: 0.25rem;
     background: lightgray;
 }
+
+@font-face {
+    font-family: 'DIN Bold';
+    src: url('../../fonts/DIN Bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.answer-box-title {
+    font-size: 18px;
+    font-family: 'DIN Bold', sans-serif;
+}
+
+.answer-box-form {
+    display: flex;
+    flex-direction: column;
+    padding: 0.25rem 0.25rem;
+}
+
+.answer-box-input-header {
+    align-self: start;
+}
+
+.answer-box-submit-button {
+    margin-top: 1rem;
+    padding: 0.25rem;
+    background-color: darkgreen;
+    border: 1px solid black;
+    border-radius: 0.25rem;
+    transition: transform 0.2 ease, background-color 0.3s ease;
+    width: 75%;
+    align-self: center;
+}
+
+.answer-box-submit-button:hover {
+    background-color: green;
+    transform: scale(1.1);
+}
+
+.answer-box-result-success {
+    color: green;
+    font-size: 10px;
+}
+
+.answer-box-text {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}

@@ -8,7 +8,7 @@ class Updater:
 
     def __init__(self):
         self.ovp = op.Overpass()
-        self.pym = pm.MongoClient("mongodb://localhost:27017/")
+        self.pym = pm.MongoClient("mongodb+srv://erickang21:bananaboy21@transitguesser.yx6hg.mongodb.net/?retryWrites=true&w=majority&appName=transitguesser")
 
     def updateStops(self, aid):
         return
@@ -60,12 +60,12 @@ class Updater:
             newname = {"_id": 0, "name": busroute.tag("name"), "idx": -1, "lat": 0, "lon": 0} #nothing has id 0
             if canupdate:
                 # here we update the name entry
-                routecol.update_one({"idx": -1}, newname)
+                routecol.update_one({"idx": -1}, { "$set": newname })
                 # then the rest
                 for i in range(len(stops)):
-                    name = ((stops[i].tag("name")) if "name" in stops[i].tags else "")
+                    name = ((stops[i].tag("name")) if "name" in stops[i].tags() else "")
                     full = {"_id": stops[i].id(), "idx": i, "lat": stops[i].lat(), "lon": stops[i].lon(), "name": name}
-                    routecol.update_one({"_id": stops[i].id()}, full)
+                    routecol.update_one({"_id": stops[i].id()}, { "$set": full })
             else:
                 routecol.delete_many({})
                 routecol.insert_one(newname)
@@ -76,5 +76,7 @@ class Updater:
                     inserts.append(full)
                 routecol.insert_many(inserts)
 
-
-        
+nom = nm.Nominatim()
+areaID = nom.query("Kitchener, Ontario").areaId()
+updater = Updater()
+updater.updateRoutes(areaID)

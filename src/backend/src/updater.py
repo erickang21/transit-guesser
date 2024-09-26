@@ -7,12 +7,63 @@ class Updater:
 
     def __init__(self):
         self.ovp = op.Overpass()
+        self.api = ap.Api() #get the query self.api (simpler self.api for when we want to find individual nodes, rather than by attribute)
         self.pym = pm.MongoClient("mongodb+srv://erickang21:bananaboy21@transitguesser.yx6hg.mongodb.net/?retryWrites=true&w=majority&appName=transitguesser")
         self.db = self.pym["transitguesser"]
         self.routes_collection = self.db["routes"]
+        self.stops_collection = self.db["stops"]
 
     def updateStops(self, aid):
-        return
+        #build a query for bus route relations and run it
+        query = op.overpassQueryBuilder(area=aid, elementType='node', selector='"highway"="bus_stop"', out='body')
+        result = self.ovp.query(query, timeout=1000)
+        print("Number of bus stops in current area:", result.countElements())
+
+        stopdict = {}
+
+        query2 = op.overpassQueryBuilder(area=aid, elementType='relation', selector='"route"="bus"', out='body')
+        result2 = self.ovp.query(query2, timeout=1000)
+
+        for route in result2.elements():
+            for m in route.members():
+                if not m.id() in stopdict:
+                    stopdict[m.id()] = []
+                stopdict[m.id()].append(route.id())
+
+        nolines = 0
+
+        for stop in result.elements():
+            # loop through all available bus routes to determine which ones fit (this is the fastest way I can do, OSM does not do reverse search for some reason)
+            relations = []
+            if not stop.id() in stopdict:
+                nolines += 1
+                continue
+            for rid in stopdict[stop.id()]:
+                querystring = 'relation/' + str(rid)
+                relations.append(self.api.query(querystring))
+            routes = []
+            for rel in relations:
+                route_data = {
+                    "_id": rel.id(),
+                    "number": rel.tag("ref"),
+                    "name": rel.tag("name"),
+                    "network": rel.tag("network"),
+                    "operator": rel.tag("operator"),
+                    "type": rel.tag("route")
+                }
+                routes.append(route_data)
+            if not "name" in stop.tags():
+                continue # if the stop does not have a name we are cooked
+            data = {
+                "_id": stop.id(),
+                "name": stop.tag("name"),
+                "network": stop.tag("network"),
+                "operator": stop.tag("operator"),
+                "inaccurateReports": 0
+            }
+            self.stops_collection.update_one({ "_id": stop.id() }, { "$set": data }, upsert=True)
+            print(f"Successfully updated/inserted routes for {stop.tag('operator')} stop {stop.tag('name')}.")
+        print("Of", len(result.elements()), "nodes queried,", nolines, "had no related routes.")
 
     def updateRoutes(self, aid):
         #build a query for bus route relations and run it
@@ -20,39 +71,41 @@ class Updater:
         result = self.ovp.query(query, timeout=1000)
         print("Number of bus routes in current area:", result.countElements())
 
-        for busroute in result.elements():
+        for route in result.elements():
             # get a list of stop coordinates for the chosen route
-            allmembers = busroute.members()
-            api = ap.Api() #get the query API (simpler API for when we want to find individual nodes, rather than by attribute)
+            allmembers = route.members()
             stops = []
             for mem in allmembers:
                 if mem.type() == 'node':
                     querystring = 'node/'+str(mem.id())
-                    info = api.query(querystring)
-                    if 'highway' in info.tags() and info.tags()['highway'] == 'bus_stop':
+                    nod = self.api.query(querystring)
+                    if 'highway' in nod.tags() and nod.tags()['highway'] == 'bus_stop':
                         stop_data = {
-                            "name": info.tag("name"),
+                            "name": nod.tag("name"),
                             "index": len(stops),
-                            "latitude": info.lat(),
-                            "longitude": info.lon()
+                            "latitude": nod.lat(),
+                            "longitude": nod.lon()
                         }
                         stops.append(stop_data)
-            if not "name" in busroute.tags():
+            if not "name" in route.tags():
                 continue # if the bus route we are getting has no name, it breaks the game
             data = {
-                "_id": busroute.id(),
-                "number": busroute.tag("ref"),
-                "name": busroute.tag("name"),
-                "network": busroute.tag("network"),
-                "operator": busroute.tag("operator"),
-                "type": busroute.tag("route"),
+                "_id": route.id(),
+                "number": route.tag("ref"),
+                "name": route.tag("name"),
+                "network": route.tag("network"),
+                "operator": route.tag("operator"),
+                "type": route.tag("route"),
                 "stops": stops,
                 "inaccurateReports": 0
             }
-            self.routes_collection.update_one({ "_id": busroute.id() }, { "$set": data }, upsert=True)
-            print(f"Successfully updated/inserted stops for {busroute.tag('operator')} route {busroute.tag('ref')}.")
+            self.routes_collection.update_one({ "_id": route.id() }, { "$set": data }, upsert=True)
+            print(f"Successfully updated/inserted stops for {route.tag('operator')} route {route.tag('ref')}.")
 
-nom = nm.Nominatim()
-areaID = nom.query("Kitchener, Ontario").areaId()
-updater = Updater()
-updater.updateRoutes(areaID)
+# test code
+if __name__ == "__main__":
+    nom = nm.Nominatim()
+    areaID = nom.query("Kitchener, Ontario").areaId()
+    updater = Updater()
+    updater.updateStops(areaID)
+    updater.updateRoutes(areaID)

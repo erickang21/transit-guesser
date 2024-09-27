@@ -5,9 +5,13 @@ import OSMPythonTools.api as ap
 import pymongo as pm
 from dotenv import load_dotenv
 from pathlib import Path
+import logging
+import time
 
 dotenv_path = Path('../../../.env')
 load_dotenv(dotenv_path=dotenv_path)
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename='updater.log', encoding='utf-8', level=logging.INFO)
 
 class Updater:
 
@@ -20,6 +24,12 @@ class Updater:
         self.stops_collection = self.db["stops"]
 
     def updateStops(self, aid):
+        #logging variables
+        start = time.time()
+        end = 0
+        stopsupdated = 0
+        relationsqueried = 0
+
         #build a query for bus route relations and run it
         query = op.overpassQueryBuilder(area=aid, elementType='node', selector='"highway"="bus_stop"', out='body')
         result = self.ovp.query(query, timeout=1000)
@@ -47,6 +57,7 @@ class Updater:
             for rid in stopdict[stop.id()]:
                 querystring = 'relation/' + str(rid)
                 relations.append(self.api.query(querystring))
+                relationsqueried += 1
             routes = []
             for rel in relations:
                 route_data = {
@@ -71,10 +82,21 @@ class Updater:
                 "routes": routes
             }
             self.stops_collection.update_one({ "_id": stop.id() }, { "$set": data }, upsert=True)
+            stopsupdated += 1
             print(f"Successfully updated/inserted routes for {stop.tag('operator')} stop {stop.tag('name')}.")
         print("Of", len(result.elements()), "nodes queried,", nolines, "had no related routes.")
+        #logging info
+        end = time.time()
+        logstring = "Updated stops at "+time.strftime('%Y-%m-%d %H:%M %Z', time.localtime(end))+" with "+str(stopsupdated)+" stops, "+str(relationsqueried)+" relations queried. Time for operation: "+str(end-start)+" seconds."
+        logger.info(logstring)
 
     def updateRoutes(self, aid):
+        #logging variables
+        start = time.time()
+        end = 0
+        routesupdated = 0
+        nodesqueried = 0
+
         #build a query for bus route relations and run it
         query = op.overpassQueryBuilder(area=aid, elementType='relation', selector='"route"="bus"', out='body')
         result = self.ovp.query(query, timeout=1000)
@@ -88,6 +110,7 @@ class Updater:
                 if mem.type() == 'node':
                     querystring = 'node/'+str(mem.id())
                     nod = self.api.query(querystring)
+                    nodesqueried += 1
                     if 'highway' in nod.tags() and nod.tags()['highway'] == 'bus_stop':
                         stop_data = {
                             "name": nod.tag("name"),
@@ -110,6 +133,11 @@ class Updater:
             }
             self.routes_collection.update_one({ "_id": route.id() }, { "$set": data }, upsert=True)
             print(f"Successfully updated/inserted stops for {route.tag('operator')} route {route.tag('ref')}.")
+            routesupdated += 1
+        #logging info
+        end = time.time()
+        logstring = "Updated routes at "+time.strftime('%Y-%m-%d %H:%M %Z', time.localtime(end))+" with "+str(routesupdated)+" routes, "+str(nodesqueried)+" nodes queried. Time for operation: "+str(end-start)+" seconds."
+        logger.info(logstring)
 
 # test code
 if __name__ == "__main__":
@@ -117,4 +145,4 @@ if __name__ == "__main__":
     areaID = nom.query("Kitchener, Ontario").areaId()
     updater = Updater()
     updater.updateStops(areaID)
-    #updater.updateRoutes(areaID)
+    updater.updateRoutes(areaID)

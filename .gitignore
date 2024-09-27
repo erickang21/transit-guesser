@@ -33,4 +33,4 @@
 /src/backend/src/cache
 
 #log files
-.log
+*.log

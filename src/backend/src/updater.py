@@ -87,7 +87,7 @@ class Updater:
         print("Of", len(result.elements()), "nodes queried,", nolines, "had no related routes.")
         #logging info
         end = time.time()
-        logstring = "Updated stops at "+time.strftime('%Y-%m-%d %H:%M %Z', time.localtime(end))+" with "+str(stopsupdated)+" stops, "+str(relationsqueried)+" relations queried. Time for operation: "+str(end-start)+" seconds."
+        logstring = "Updated stops in area "+str(aid)+" at "+time.strftime('%Y-%m-%d %H:%M %Z', time.localtime(end))+" with "+str(stopsupdated)+" stops, "+str(relationsqueried)+" relations queried. Time for operation: "+str(end-start)+" seconds."
         logger.info(logstring)
 
     def updateRoutes(self, aid):
@@ -136,7 +136,7 @@ class Updater:
             routesupdated += 1
         #logging info
         end = time.time()
-        logstring = "Updated routes at "+time.strftime('%Y-%m-%d %H:%M %Z', time.localtime(end))+" with "+str(routesupdated)+" routes, "+str(nodesqueried)+" nodes queried. Time for operation: "+str(end-start)+" seconds."
+        logstring = "Updated routes in area "+str(aid)+" at "+time.strftime('%Y-%m-%d %H:%M %Z', time.localtime(end))+" with "+str(routesupdated)+" routes, "+str(nodesqueried)+" nodes queried. Time for operation: "+str(end-start)+" seconds."
         logger.info(logstring)
 
 # test code

@@ -23,6 +23,11 @@ export type Stop = {
     latitude: number;
 }
 
+export type RandomStopResponse = Stop & {
+    availableRoutes: Stop[]
+    correctRoutes: Record<string, string[]>
+}
+
 type StopEntry = {
     name: string;
     index: number;

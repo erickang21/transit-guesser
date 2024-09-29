@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import {Coordinate, Stop} from "../types/types";
-import {getAllStops} from "../helpers/api";
+import {Coordinate, RandomStopResponse, Route, Stop} from "../types/types";
+import {getAllStops, getRandomStop} from "../helpers/api";
 import MainGame from "../components/MainGame";
 
 const MainGamePage = (): React.ReactElement => {
     const [coordinates, setCoordinates] = useState<Coordinate[]>([]);
     const [loading, setLoading] = useState(true);
+    const [correctRoutes, setCorrectRoutes] = useState<Route[]>([]);
 
     useEffect(() => {
         const fetchStops = async () => {
             try {
-                const stopsData: Stop[] = await getAllStops();
+                const selectedStop: RandomStopResponse = await getRandomStop();
                 // Randomly select a stop
-                const selectedStop: Stop = stopsData[Math.floor(Math.random() * stopsData.length)];
                 setCoordinates((prev) => [...prev, { latitude: selectedStop.latitude, longitude: selectedStop.longitude }])
             } catch (error) {
                 console.error('Error fetching stops:', error);

@@ -7,6 +7,7 @@ const MainGamePage = (): React.ReactElement => {
     const [coordinates, setCoordinates] = useState<Coordinate[]>([]);
     const [loading, setLoading] = useState(true);
     const [correctRoutes, setCorrectRoutes] = useState<Route[]>([]);
+    const [correctAnswers, setCorrectAnswers] = useState<Record<string, string[]>>({});
 
     useEffect(() => {
         const fetchStops = async () => {
@@ -14,6 +15,7 @@ const MainGamePage = (): React.ReactElement => {
                 const selectedStop: RandomStopResponse = await getRandomStop();
                 // Randomly select a stop
                 setCoordinates((prev) => [...prev, { latitude: selectedStop.latitude, longitude: selectedStop.longitude }])
+                setCorrectAnswers(selectedStop.correctRoutes);
             } catch (error) {
                 console.error('Error fetching stops:', error);
             } finally {
@@ -33,7 +35,7 @@ const MainGamePage = (): React.ReactElement => {
         )
     }
 
-    return <MainGame coordinates={coordinates} />
+    return <MainGame coordinates={coordinates} correctAnswers={correctAnswers} />
 }
 
 export default MainGamePage;

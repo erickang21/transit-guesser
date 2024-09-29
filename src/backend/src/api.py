@@ -18,7 +18,7 @@ stops_collection = db["stops"]
 app = Flask(__name__)
 CORS(app, origins="*")
 cache = TTLCache(maxsize=100000, ttl=60*60*24)
-#CORS(app, origins=os.getenv("origins").split(","))
+CORS(app, origins=os.getenv("origins").split(","))
 
 def fetch_all_data(collection_name, dataFilter=None, dbFilter=None, alwaysUseDb=False, cache_key=None):
     if dbFilter is None:

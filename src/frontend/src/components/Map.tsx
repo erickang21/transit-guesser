@@ -14,7 +14,7 @@ export default function Map({ center, markers, zoom }: MapProps) {
     console.log("Map is rendered with center: ", center);
     console.log("Map is rendered with markers: ", markers)
     return (
-        <div style={{width: "100vw", height: "90vw"}}>
+        <div style={{width: "100vw"}}>
         <MapContainer center={[center.latitude, center.longitude]} zoom={zoom || 35} scrollWheelZoom={false} >
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

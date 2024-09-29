@@ -26,8 +26,17 @@ export const getAllRoutes = async (): Promise<Route[]> => {
 export const getRandomStop = async (): Promise<RandomStopResponse> => {
     const endpoints: Record<string, string> = process.env.NODE_ENV === "development" ? DevEndpoints : Endpoints;
     try {
-        console.log("endpoint ", endpoints.randomStop)
         const response = await axios.get(endpoints.randomStop);
+        return response.data;
+    } catch (err) {
+        throw new Error(`\`Error fetching a random stop: ${err}`)
+    }
+}
+
+export const getOperators = async (): Promise<Record<string, string[]>> => {
+    const endpoints: Record<string, string> = process.env.NODE_ENV === "development" ? DevEndpoints : Endpoints;
+    try {
+        const response = await axios.get(endpoints.operators);
         return response.data;
     } catch (err) {
         throw new Error(`\`Error fetching a random stop: ${err}`)

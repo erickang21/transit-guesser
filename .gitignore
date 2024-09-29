@@ -5,7 +5,7 @@
 /.vscode
 
 # env
-.env
+*.env
 
 # dependencies
 /src/frontend/node_modules

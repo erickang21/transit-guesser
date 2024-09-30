@@ -21,8 +21,31 @@
 }
 
 .answer-box-title {
-    font-size: 18px;
+    font-size: 24px;
     font-family: 'DIN Bold', sans-serif;
+}
+
+.answer-box-strikes {
+    display: flex;
+    flex-direction: row;
+}
+
+.answer-box-remaining-guesses {
+    display: flex;
+    flex-direction: row;
+    justify-self: flex-start;
+    padding: 0.25rem;
+    font-size: 20px;
+    justify-content: space-between;
+}
+
+.answer-box-remaining-guesses-icon {
+    align-self: center;
+}
+
+.answer-box-operator-select {
+    padding: 0.25rem;
+    border-radius: 0.25rem;
 }
 
 .answer-box-form {
@@ -46,6 +69,10 @@
     align-self: center;
 }
 
+.answer-box-submit-button-text {
+    align-self: center;
+}
+
 .answer-box-submit-button:hover {
     background-color: green;
     transform: scale(1.1);
@@ -53,7 +80,16 @@
 
 .answer-box-result-success {
     color: green;
-    font-size: 10px;
+    font-size: 14px;
+    align-self: flex-start;
+    padding: 0 0.25rem;
+}
+
+.answer-box-result-error {
+    color: red;
+    font-size: 14px;
+    align-self: flex-start;
+    padding: 0 0.25rem;
 }
 
 .answer-box-text {

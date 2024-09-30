@@ -7,7 +7,7 @@ import Container from 'react-bootstrap/Container';
 import "../css/home.css";
 import AnswerBox from "./AnswerBox";
 
-const MainGame = ({ coordinates, correctAnswers }: { coordinates: Coordinate[], correctAnswers: Record<string, string[]>}): React.ReactElement => {
+const MainGame = (): React.ReactElement => {
     return (
         <div className="home-page">
             <div className="home-navbar">
@@ -24,12 +24,9 @@ const MainGame = ({ coordinates, correctAnswers }: { coordinates: Coordinate[], 
                 </Navbar>
             </div>
             <div className="home-map-container">
-                <Map
-                    center={coordinates[0]}
-                    markers={coordinates}
-                />
+                <Map />
             </div>
-            <AnswerBox correctAnswers={correctAnswers} />
+            <AnswerBox />
         </div>
     );
 }

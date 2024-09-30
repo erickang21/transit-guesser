@@ -9,7 +9,7 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-    <React.StrictMode>
+    <>
         <link
             rel="stylesheet"
             href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
@@ -22,7 +22,7 @@ root.render(
             crossOrigin=""
         ></script>
         <App/>
-    </React.StrictMode>
+    </>
 );
 
 // If you want to start measuring performance in your app, pass a function

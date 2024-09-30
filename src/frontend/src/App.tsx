@@ -1,11 +1,14 @@
 import React from 'react';
 import './App.css';
 import MainGamePage from "./pages/MainGamePage";
+import { MainGameProvider } from "./contexts/MainGameContext";
 
 function App() {
   return (
     <div className="App">
-        <MainGamePage />
+        <MainGameProvider>
+            <MainGamePage />
+        </MainGameProvider>
     </div>
   );
 }

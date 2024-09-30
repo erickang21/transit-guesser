@@ -66,4 +66,12 @@ class session:
     def getStatus(self):
         self.update("")
         return (self.gameover, self.score, abs(self.rounds))
-            
+
+    def getState(self): #useful for putting in the database
+        state = {
+            "mode": self.mode,
+            "score": self.score,
+            "rounds": self.rounds,
+            "gameover": self.gameover
+        }
+        return state

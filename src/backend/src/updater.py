@@ -49,6 +49,8 @@ class Updater:
         nolines = 0
 
         for stop in result.elements():
+            if stop.tag("operator") is None:
+                continue
             # loop through all available bus routes to determine which ones fit (this is the fastest way I can do, OSM does not do reverse search for some reason)
             relations = []
             if not stop.id() in stopdict:
@@ -81,6 +83,7 @@ class Updater:
                 "inaccurateReports": 0,
                 "routes": routes
             }
+
             self.stops_collection.update_one({ "_id": stop.id() }, { "$set": data }, upsert=True)
             stopsupdated += 1
             print(f"Successfully updated/inserted routes for {stop.tag('operator')} stop {stop.tag('name')}.")
@@ -103,6 +106,8 @@ class Updater:
         print("Number of bus routes in current area:", result.countElements())
 
         for route in result.elements():
+            if route.tag("operator") is None:
+                continue
             # get a list of stop coordinates for the chosen route
             allmembers = route.members()
             stops = []

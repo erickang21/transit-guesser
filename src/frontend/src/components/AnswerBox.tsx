@@ -128,7 +128,7 @@ const AnswerBox = (): React.ReactElement => {
                     value={selectedOperatorValue}
                     onChange={handleOperatorChange}
                     disabled={guessStep !== 0 || strikes === 3}
-                    style={guessStep === 1 ? {border: "1px solid green"} : {}}
+                    style={guessStep === 1 && strikes !== 3 ? {border: "1px solid green"} : {}}
                 >
                     <option value="">Choose an option...</option>
                     {Object.keys(operatorData).map((operator) => (
@@ -141,7 +141,7 @@ const AnswerBox = (): React.ReactElement => {
                     <div className="answer-box-text">
                         <span className="answer-box-input-header">Route Number:</span>
                         {strikes === 3 && <ImCross style={{color: "red"}}/>}
-                        {guessStep > 1 && strikes != 3 && <IoIosCheckmark style={{color: "green"}}/>}
+                        {guessStep > 1 && strikes !== 3 && <IoIosCheckmark style={{color: "green"}}/>}
                     </div>
                     <select
                         className="answer-box-operator-select"
@@ -149,7 +149,7 @@ const AnswerBox = (): React.ReactElement => {
                         value={selectedRouteValue}
                         onChange={handleRouteChange}
                         disabled={guessStep !== 1 || strikes === 3}
-                        style={guessStep > 1 ? {border: "1px solid green"} : {}}
+                        style={guessStep > 1 && strikes !== 3 ? {border: "1px solid green"} : {}}
                     >
                         <option value="">Choose an option...</option>
                         {operatorData[selectedOperatorValue].map((route) => (

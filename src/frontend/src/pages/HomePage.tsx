@@ -1,0 +1,58 @@
+import React from 'react';
+import Navbar from "react-bootstrap/Navbar";
+import Container from "react-bootstrap/Container";
+import Nav from "react-bootstrap/Nav";
+import "../css/HomePage.css";
+import { GameMode } from "../types/types";
+import { useNavigate } from "react-router-dom";
+
+const HomePage = (): React.ReactElement => {
+    const navigate = useNavigate();
+    const gameModes: GameMode[] = [
+        {
+            name: "Classic",
+            imageUrl: "",
+            description: "Our most popular mode. Guess the transit agency and route number from a map marker."
+        }
+    ]
+    return (
+        <div className="home-page">
+            <div className="home-navbar">
+                <Navbar expand="lg" className="bg-body-tertiary home-navbar-element">
+                    <Container style={{ marginLeft: "0", marginRight: "0" }}>
+                        <Navbar.Brand href="/">Transit Guesser</Navbar.Brand>
+                        <Navbar.Toggle aria-controls="basic-navbar-nav"/>
+                        <Navbar.Collapse id="basic-navbar-nav">
+                            <Nav className="me-auto">
+                                <Nav.Link href="/">Home</Nav.Link>
+                            </Nav>
+                        </Navbar.Collapse>
+                    </Container>
+                </Navbar>
+            </div>
+            <div className="home-main-section">
+                <h1 className="home-page-slogan">A classic trivia game, reimagined.</h1>
+                <div className="game-body">
+                    <div className="game-mode-select-container">
+                        <div className="game-mode-selector">
+                            {gameModes.map((gameMode) => (
+                                <div className="game-mode-display">
+                                    <h3>{gameMode.name}</h3>
+                                    <img style={{alignSelf: "center", margin: "1rem 0"}}
+                                         src="https://i.postimg.cc/BQND66YQ/IMG-3210.jpg" width="75%" height="65%"/>
+                                    <span>{gameMode.description}</span>
+                                    <button className="game-mode-play" onClick={() => navigate("/game")}>
+                                        <span className="game-mode-play-button-text">Let's play!</span>
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    )
+}
+
+export default HomePage;

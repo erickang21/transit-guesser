@@ -195,9 +195,9 @@ class Group: #multiplayer support, each session is contained in a group of one o
         self.lastaccess = time.time()
         return len(self.playerids)
     
-    def isOwner(self, uuid):
+    def getOwner(self):
         self.lastaccess = time.time()
-        return len(self.playerids) > 0 and uuid == self.playerids[0]
+        return self.playerids[0] if len(self.playerids) > 0 else ""
     
     def doUpdate(self, uuid, action):
         self.lastaccess = time.time()
@@ -233,6 +233,9 @@ class Group: #multiplayer support, each session is contained in a group of one o
     
     def getSession(self, uuid): #use if you really want to use the session methods
         return self.players.get(uuid)
+    
+    def getLastAccess(self):
+        return self.lastaccess
 
 class SessionManager:
     def __init__(self):
@@ -270,3 +273,11 @@ class SessionManager:
     
     def getGroup(self, groupid): #if you wanna do some operation on the group using group methods, use this
         return self.groups[groupid]
+    
+    def clean(self, lastaccess=0): #run this every once in a while to clean up groups, joining empty groups is possible if you do it quick enough
+        toremove = []
+        for k in self.groups.keys():
+            if lastaccess > self.groups[k].getLastAccess() or self.groups[k].getStatus() == GroupStatus.EMPTY:
+                toremove.append(k)
+        for k in toremove:
+            self.groups.pop(k)

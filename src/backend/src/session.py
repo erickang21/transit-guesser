@@ -278,6 +278,8 @@ class SessionManager:
         return self.groups[groupid].removePlayer(uuid)
     
     def getGroup(self, groupid): #if you wanna do some operation on the group using group methods, use this
+        if self.groups.get(groupid) is None:
+            return False
         return self.groups[groupid]
     
     def clean(self, lastaccess=0): #run this every once in a while to clean up groups, joining empty groups is possible if you do it quick enough
@@ -287,3 +289,9 @@ class SessionManager:
                 toremove.append(k)
         for k in toremove:
             self.groups.pop(k)
+    
+    def removeGroup(self, groupid): #if you wanna take group out ig if they somehow get banned
+        if self.groups.get(groupid) is None:
+            return False
+        self.groups.pop(groupid)
+        return True

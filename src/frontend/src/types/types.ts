@@ -45,3 +45,9 @@ export type Route = {
     stops: StopEntry[];
     type: string;
 }
+
+export type GameMode = {
+    name: string;
+    imageUrl: string;
+    description: string;
+}

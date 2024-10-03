@@ -19,32 +19,7 @@ const AnswerBox = (): React.ReactElement => {
     const [selectedOperatorValue, setSelectedOperatorValue] = useState('');
     const [selectedRouteValue, setSelectedRouteValue] = useState('');
 
-    const { correctAnswers, operatorData } = useContext(MainGameContext);
-
-    /*
-    useEffect(() => {
-        // A failsafe by ensuring correct answers are added to selection list.
-        for (const [operator, routes] of Object.entries(correctAnswers)) {
-            console.log("operator is", operator)
-            // This should never happen, but if routes are empty, don't add either of them.
-            console.log("Routes: ", routes);
-            console.log("Operator data: ", operatorData[operator]);
-            if (routes?.length && operatorData[operator]) {
-                for (const route of routes) {
-                    if (!operatorData[operator].includes(route)) {
-                        setOperatorData((prev) => {
-                            const newData = {...prev};
-                            newData[operator] = [...prev[operator], route];
-                            console.log("Added", operator, route);
-                            return newData;
-                        })
-                    }
-                }
-            }
-        }
-    }, [setOperatorData, correctAnswers])
-
-     */
+    const { correctAnswers, operatorData, getNewData } = useContext(MainGameContext);
 
     const handleOperatorChange = (event: any) => {
         setSelectedOperatorValue(event.target.value)
@@ -78,6 +53,15 @@ const AnswerBox = (): React.ReactElement => {
             }
         }
     }, [guessStep, correctAnswers, selectedOperatorValue, selectedRouteValue])
+
+    const goToNextRound = useCallback(() => {
+        setStrikes(0);
+        setGuessStep(0);
+        getNewData();
+        setGuessed(false);
+        setSelectedOperatorValue('');
+        setSelectedRouteValue('');
+    }, [getNewData])
 
     const AnswerBoxSuccessMessage = (): React.ReactElement => (
         <span className="answer-box-result-success">{guessStep === 1 ? "Amazing work! Now guess the route." : guessStep === 2 ? "Flawless!" : ""}</span>
@@ -128,7 +112,7 @@ const AnswerBox = (): React.ReactElement => {
                     value={selectedOperatorValue}
                     onChange={handleOperatorChange}
                     disabled={guessStep !== 0 || strikes === 3}
-                    style={guessStep === 1 ? {border: "1px solid green"} : {}}
+                    style={guessStep === 1 && strikes !== 3 ? {border: "1px solid green"} : {}}
                 >
                     <option value="">Choose an option...</option>
                     {Object.keys(operatorData).map((operator) => (
@@ -141,7 +125,7 @@ const AnswerBox = (): React.ReactElement => {
                     <div className="answer-box-text">
                         <span className="answer-box-input-header">Route Number:</span>
                         {strikes === 3 && <ImCross style={{color: "red"}}/>}
-                        {guessStep > 1 && strikes != 3 && <IoIosCheckmark style={{color: "green"}}/>}
+                        {guessStep > 1 && strikes !== 3 && <IoIosCheckmark style={{color: "green"}}/>}
                     </div>
                     <select
                         className="answer-box-operator-select"
@@ -149,7 +133,7 @@ const AnswerBox = (): React.ReactElement => {
                         value={selectedRouteValue}
                         onChange={handleRouteChange}
                         disabled={guessStep !== 1 || strikes === 3}
-                        style={guessStep > 1 ? {border: "1px solid green"} : {}}
+                        style={guessStep > 1 && strikes !== 3 ? {border: "1px solid green"} : {}}
                     >
                         <option value="">Choose an option...</option>
                         {operatorData[selectedOperatorValue].map((route) => (
@@ -158,9 +142,15 @@ const AnswerBox = (): React.ReactElement => {
                     </select>
                 </div>
             )}
-            <button className="answer-box-submit-button" onClick={verifyGuess}>
-                <span className="answer-box-submit-button-text">Lock it in!</span>
-            </button>
+            {strikes === 3 || guessStep === 2 ? (
+                <button className="answer-box-submit-button" style={{color: "yellow"}} onClick={goToNextRound}>
+                    <span className="answer-box-submit-button-text">Next one!</span>
+                </button>
+            ) : (
+                <button className="answer-box-submit-button" onClick={verifyGuess}>
+                    <span className="answer-box-submit-button-text">Lock it in!</span>
+                </button>
+            )}
 
         </div>
     )

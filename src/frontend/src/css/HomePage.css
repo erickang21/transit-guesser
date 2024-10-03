@@ -1,0 +1,59 @@
+.home-main-section {
+    background: radial-gradient(#083D2D, #052c07);
+    height: 90vh;
+    width: 100vw;
+}
+
+.home-navbar-element {
+    background: #4D443A;
+}
+
+.home-page-slogan {
+    margin-top: 2rem;
+    color: white;
+}
+
+.game-mode-select-container {
+    display: flex;
+    width: 100vw;
+    justify-content: center;
+}
+
+.game-mode-selector {
+    width: 50%;
+    height: fit-content;
+    border: 1px solid black;
+    border-radius: 0.25rem;
+    justify-content: center;
+    display: flex;
+    color: white;
+}
+
+.game-mode-display {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 0;
+}
+
+.game-mode-play {
+    margin-top: 1rem;
+    width: 75%;
+    align-self: center;
+    border: 1px solid black;
+    border-radius: 8px;
+    transition: 0.3s background-color ease;
+}
+
+.game-mode-play:hover {
+    background-color: lightgreen;
+}
+
+.game-mode-play-button-text {
+    font-size: 20px;
+}
+
+.game-body {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

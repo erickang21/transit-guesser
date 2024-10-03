@@ -12,12 +12,12 @@ const MainGame = (): React.ReactElement => {
         <div className="home-page">
             <div className="home-navbar">
                 <Navbar expand="lg" className="bg-body-tertiary home-navbar-element">
-                    <Container>
-                        <Navbar.Brand href="#home">Transit Guesser</Navbar.Brand>
+                    <Container style={{ marginLeft: "0", marginRight: "0" }}>
+                        <Navbar.Brand href="/">Transit Guesser</Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Collapse id="basic-navbar-nav">
                             <Nav className="me-auto">
-                                <Nav.Link href="#home">Home</Nav.Link>
+                                <Nav.Link href="/">Home</Nav.Link>
                             </Nav>
                         </Navbar.Collapse>
                     </Container>

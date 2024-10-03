@@ -12,15 +12,15 @@ from cachetools import TTLCache
 dotenv_path = Path('../../../.env')
 load_dotenv(dotenv_path=dotenv_path)
 
+app = Flask(__name__)
+CORS(app)
+
 pym = AsyncMongoClient(os.getenv("mongodb"))
 db = pym["transitguesser"]
 routes_collection = db["routes"]
 stops_collection = db["stops"]
 
-app = Flask(__name__)
-CORS(app, origins="*")
 cache = TTLCache(maxsize=100000, ttl=60*60*24)
-CORS(app, origins=os.getenv("origins").split(","))
 
 async def fetch_all_data(collection_name, dataFilter=None, dbFilter=None, alwaysUseDb=False, saveToCache=True):
     if dbFilter is None:
@@ -46,18 +46,18 @@ def getAliases(operator_name):
     return aliases.get(operator_name.lower(), operator_name)
 
 
-@app.route('/routes', methods=['GET'])
+@app.route('/routes', methods=['GET', 'OPTIONS'])
 async def get_routes():
     response = await fetch_all_data("routes")
     return jsonify(response)
 
-@app.route('/stops', methods=['GET'])
+@app.route('/stops', methods=['GET', 'OPTIONS'])
 async def get_stops():
     response = fetch_all_data("stops",
                    lambda data: list(filter(lambda entry: len(entry.get("routes", [])) > 0 and entry.get("longitude", 0) and entry.get("latitude", 0), data)))
     return jsonify(response)
 
-@app.route('/randomStop', methods=['GET'])
+@app.route('/randomStop', methods=['GET', 'OPTIONS'])
 async def get_random_stops():
     correct_routes = {}
     data = {}
@@ -83,7 +83,7 @@ async def get_random_stops():
         data["correctRoutes"] = correct_routes
     return jsonify(data)
 
-@app.route('/operators', methods=['GET'])
+@app.route('/operators', methods=['GET', 'OPTIONS'])
 async def getOperators():
     if cache.get("operators", None):
         return jsonify(cache["operators"])
@@ -107,4 +107,4 @@ async def getOperators():
         return jsonify(operator_data)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5001)

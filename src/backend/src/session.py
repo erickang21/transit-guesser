@@ -240,7 +240,7 @@ class Group: #multiplayer support, each session is contained in a group of one o
 class SessionManager:
     def __init__(self):
         self.groups = {} #these are indexed by group ID
-    def start(self, mode, configfile="", account=""): #initiates group, returns group ID which may be empty if there is an error
+    def start(self, mode, configfile="", account=""): #initiates group, returns group ID and session ID
         initsession = None
         if account != "":
             initsession = Session(mode, configfile, account, fetchAccountDetails(account)["displayname"])
@@ -249,8 +249,14 @@ class SessionManager:
             initsession = Session(mode, configfile, account, guestname)
         group = Group(initsession)
         self.groups[group.getID()] = group
+        return group.getID(), initsession.getUUID()
+    def startWithSession(self, session): #returns only group ID
+        group = Group(session)
+        self.groups[group.getID()] = group
         return group.getID()
-    def addUser(self, groupid, account=""): #returns status
+    def addGroup(self, group): #if for some reason you want to add a whole fully-formed group
+        self.groups[group.getID()] = group
+    def addUser(self, groupid, account=""): #returns status and the session ID
         if self.groups.get(groupid) is None:
             return False
         newsession = None
@@ -259,14 +265,14 @@ class SessionManager:
         else:
             guestname = generate_name(style='capital') # using name generator, generate a randomized guest name
             newsession = Session(self.groups[groupid].getMode(), self.groups[groupid].getCFile(), account, guestname)
-        return self.groups[groupid].addPlayer(newsession)
+        return self.groups[groupid].addPlayer(newsession), newsession.getUUID()
     
-    def addSession(self, groupid, session):
+    def addSession(self, groupid, session): #return status only
         if self.groups.get(groupid) is None:
             return False
         return self.groups[groupid].addPlayer(session)
     
-    def removeSession(self, groupid, uuid):
+    def removeSession(self, groupid, uuid): #returns status
         if self.groups.get(groupid) is None:
             return False
         return self.groups[groupid].removePlayer(uuid)

@@ -6,7 +6,7 @@ import time
 # manages player sessions, allowing for various game modes and scoring systems
 defaultfile = './scoringconfig'
 
-# configuration: dict containing all the configuration details of the current session
+# configuration: dict containing all the configuration details of the current game
 # score: the current score
 
 def fetchAccountDetails(): #TODO: fetch account details from database
@@ -43,10 +43,10 @@ def getActionStats(mode, action, configfile=defaultfile): #return the score and 
         return 0, 0
     return int(current[0]), int(current[1])
 
-class Session:
+class Game:
     def __init__(self, mode, configfile=defaultfile, auid="", displayname="Guest"):
         self.cfile = configfile
-        self.auid = auid #if this is empty, then guest session
+        self.auid = auid #if this is empty, then guest game
         self.sessionuuid = str(uuid.uuid5())
         self.displayname = displayname
         self.mode = mode
@@ -54,7 +54,7 @@ class Session:
         with open(configfile) as cfg:
             configdict = json.load(cfg)
         if not mode in configdict.keys():
-            raise Exception("GAME MODE NOT FOUND DURING SESSION CREATION: "+mode)
+            raise Exception("GAME MODE NOT FOUND DURING GAME CREATION: "+mode)
         self.configuration = configdict[mode]
         if not "startscore" in self.configuration.keys():
             raise Exception("INVALID MODE DATA: START SCORE NOT FOUND!")
@@ -142,8 +142,8 @@ class GroupStatus(Enum):
     NORMAL = 0
     FINISHED = 1
     EMPTY = -1
-class Group: #multiplayer support, each session is contained in a group of one or more sessions
-    def __init__(self, initiator): #initiator is the session that initiates the group, will "own" the group
+class Group: #multiplayer support, each game is contained in a group of one or more sessions
+    def __init__(self, initiator): #initiator is the game that initiates the group, will "own" the group
         self.groupid = str(uuid.uuid5())
         self.mode = initiator.getMode()
         self.cfile = initiator.getCFile()
@@ -153,7 +153,7 @@ class Group: #multiplayer support, each session is contained in a group of one o
         self.status = GroupStatus.NORMAL
         self.unfinished = 1
         self.lastaccess = time.time()
-    def addPlayer(self, player): #add player session
+    def addPlayer(self, player): #add player game
         self.lastaccess = time.time()
         if not self.players.get(player.getUUID()) is None:
             return False #DO NOT add duplicates
@@ -231,7 +231,7 @@ class Group: #multiplayer support, each session is contained in a group of one o
         self.lastaccess = time.time()
         return self.mode
     
-    def getSession(self, uuid): #use if you really want to use the session methods
+    def getSession(self, uuid): #use if you really want to use the game methods
         return self.players.get(uuid)
     
     def getLastAccess(self):
@@ -240,37 +240,37 @@ class Group: #multiplayer support, each session is contained in a group of one o
 class SessionManager:
     def __init__(self):
         self.groups = {} #these are indexed by group ID
-    def start(self, mode, configfile="", account=""): #initiates group, returns group ID and session ID
+    def start(self, mode, configfile="", account=""): #initiates group, returns group ID and game ID
         initsession = None
         if account != "":
-            initsession = Session(mode, configfile, account, fetchAccountDetails(account)["displayname"])
+            initsession = Game(mode, configfile, account, fetchAccountDetails(account)["displayname"])
         else:
             guestname = generate_name(style='capital') # using name generator, generate a randomized guest name
-            initsession = Session(mode, configfile, account, guestname)
+            initsession = Game(mode, configfile, account, guestname)
         group = Group(initsession)
         self.groups[group.getID()] = group
         return group.getID(), initsession.getUUID()
-    def startWithSession(self, session): #returns only group ID
-        group = Group(session)
+    def startWithSession(self, Game): #returns only group ID
+        group = Group(Game)
         self.groups[group.getID()] = group
         return group.getID()
     def addGroup(self, group): #if for some reason you want to add a whole fully-formed group
         self.groups[group.getID()] = group
-    def addUser(self, groupid, account=""): #returns status and the session ID
+    def addUser(self, groupid, account=""): #returns status and the game ID
         if self.groups.get(groupid) is None:
             return False
         newsession = None
         if account != "":
-            newsession = Session(self.groups[groupid].getMode(), self.groups[groupid].getCFile(), account, fetchAccountDetails(account)["displayname"])
+            newsession = Game(self.groups[groupid].getMode(), self.groups[groupid].getCFile(), account, fetchAccountDetails(account)["displayname"])
         else:
             guestname = generate_name(style='capital') # using name generator, generate a randomized guest name
-            newsession = Session(self.groups[groupid].getMode(), self.groups[groupid].getCFile(), account, guestname)
+            newsession = Game(self.groups[groupid].getMode(), self.groups[groupid].getCFile(), account, guestname)
         return self.groups[groupid].addPlayer(newsession), newsession.getUUID()
     
-    def addSession(self, groupid, session): #return status only
+    def addSession(self, groupid, Game): #return status only
         if self.groups.get(groupid) is None:
             return False
-        return self.groups[groupid].addPlayer(session)
+        return self.groups[groupid].addPlayer(Game)
     
     def removeSession(self, groupid, uuid): #returns status
         if self.groups.get(groupid) is None:

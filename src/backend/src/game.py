@@ -3,7 +3,7 @@ import uuid #we will use uuid5 in this game
 from enum import Enum
 from names_generator import generate_name
 import time
-# manages player sessions, allowing for various game modes and scoring systems
+# manages games, allowing for various game modes and scoring systems
 defaultfile = './scoringconfig'
 
 # configuration: dict containing all the configuration details of the current game
@@ -47,7 +47,7 @@ class Game:
     def __init__(self, mode, configfile=defaultfile, auid="", displayname="Guest"):
         self.cfile = configfile
         self.auid = auid #if this is empty, then guest game
-        self.sessionuuid = str(uuid.uuid5())
+        self.gameuuid = str(uuid.uuid5())
         self.displayname = displayname
         self.mode = mode
         configdict = None
@@ -124,7 +124,7 @@ class Game:
         return self.auid
     
     def getUUID(self):
-        return self.sessionuuid
+        return self.gameuuid
     
     def getName(self):
         return self.displayname
@@ -142,7 +142,7 @@ class GroupStatus(Enum):
     NORMAL = 0
     FINISHED = 1
     EMPTY = -1
-class Group: #multiplayer support, each game is contained in a group of one or more sessions
+class Group: #multiplayer support, each game is contained in a group of one or more games
     def __init__(self, initiator): #initiator is the game that initiates the group, will "own" the group
         self.groupid = str(uuid.uuid5())
         self.mode = initiator.getMode()
@@ -231,26 +231,26 @@ class Group: #multiplayer support, each game is contained in a group of one or m
         self.lastaccess = time.time()
         return self.mode
     
-    def getSession(self, uuid): #use if you really want to use the game methods
+    def getGame(self, uuid): #use if you really want to use the game methods
         return self.players.get(uuid)
     
     def getLastAccess(self):
         return self.lastaccess
 
-class SessionManager:
+class GameManager:
     def __init__(self):
         self.groups = {} #these are indexed by group ID
     def start(self, mode, configfile="", account=""): #initiates group, returns group ID and game ID
-        initsession = None
+        initgame = None
         if account != "":
-            initsession = Game(mode, configfile, account, fetchAccountDetails(account)["displayname"])
+            initgame = Game(mode, configfile, account, fetchAccountDetails(account)["displayname"])
         else:
             guestname = generate_name(style='capital') # using name generator, generate a randomized guest name
-            initsession = Game(mode, configfile, account, guestname)
-        group = Group(initsession)
+            initgame = Game(mode, configfile, account, guestname)
+        group = Group(initgame)
         self.groups[group.getID()] = group
-        return group.getID(), initsession.getUUID()
-    def startWithSession(self, Game): #returns only group ID
+        return group.getID(), initgame.getUUID()
+    def startWithGame(self, Game): #returns only group ID
         group = Group(Game)
         self.groups[group.getID()] = group
         return group.getID()
@@ -259,20 +259,20 @@ class SessionManager:
     def addUser(self, groupid, account=""): #returns status and the game ID
         if self.groups.get(groupid) is None:
             return False
-        newsession = None
+        newgame = None
         if account != "":
-            newsession = Game(self.groups[groupid].getMode(), self.groups[groupid].getCFile(), account, fetchAccountDetails(account)["displayname"])
+            newgame = Game(self.groups[groupid].getMode(), self.groups[groupid].getCFile(), account, fetchAccountDetails(account)["displayname"])
         else:
             guestname = generate_name(style='capital') # using name generator, generate a randomized guest name
-            newsession = Game(self.groups[groupid].getMode(), self.groups[groupid].getCFile(), account, guestname)
-        return self.groups[groupid].addPlayer(newsession), newsession.getUUID()
+            newgame = Game(self.groups[groupid].getMode(), self.groups[groupid].getCFile(), account, guestname)
+        return self.groups[groupid].addPlayer(newgame), newgame.getUUID()
     
-    def addSession(self, groupid, Game): #return status only
+    def addGame(self, groupid, Game): #return status only
         if self.groups.get(groupid) is None:
             return False
         return self.groups[groupid].addPlayer(Game)
     
-    def removeSession(self, groupid, uuid): #returns status
+    def removeGame(self, groupid, uuid): #returns status
         if self.groups.get(groupid) is None:
             return False
         return self.groups[groupid].removePlayer(uuid)

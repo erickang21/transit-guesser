@@ -31,6 +31,8 @@ adb.init_app(app)
 
 app.config["JWT_SECRET_KEY"] = os.getenv("jwtsecret")
 app.config['JWT_TOKEN_LOCATION'] = ['headers']
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 jwt = JWTManager(app)
 
 # blueprint for authentication code

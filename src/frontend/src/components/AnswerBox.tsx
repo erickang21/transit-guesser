@@ -63,6 +63,12 @@ const AnswerBox = (): React.ReactElement => {
         setSelectedRouteValue('');
     }, [getNewData])
 
+    const calculatePoints = useCallback(() => {
+        let basePoints = strikes === 3 ? 50 : 400;
+        if (strikes === 0) basePoints += 100;
+        return basePoints;
+    }, [strikes]);
+
     const AnswerBoxSuccessMessage = (): React.ReactElement => (
         <span className="answer-box-result-success">{guessStep === 1 ? "Amazing work! Now guess the route." : guessStep === 2 ? "Flawless!" : ""}</span>
     )
@@ -140,6 +146,14 @@ const AnswerBox = (): React.ReactElement => {
                             <option value={route}>{route}</option>
                         ))}
                     </select>
+                </div>
+            )}
+            {(guessStep === 2 || strikes === 3) && (
+                <div>
+                    <span className="answer-box-points">+{calculatePoints()} points</span>
+                    {guessStep === 2 && <div className="answer-box-points-entry"><span>Correct answer</span><span>+400 points</span></div>}
+                    {(guessStep === 2 && strikes === 0) && <div className="answer-box-points-entry"><span>Flawless</span><span>+100 points</span></div>}
+                    {strikes === 3 && <div className="answer-box-points-entry"><span>A good effort!</span><span>+50 points</span></div>}
                 </div>
             )}
             {strikes === 3 || guessStep === 2 ? (

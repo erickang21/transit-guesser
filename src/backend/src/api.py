@@ -1,6 +1,7 @@
 import os
-
+from datetime import timedelta
 from flask import Flask, jsonify
+from flask_sqlalchemy import SQLAlchemy
 import pymongo as pm
 from pymongo import AsyncMongoClient
 import random
@@ -8,6 +9,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 from flask_cors import CORS
 from cachetools import TTLCache
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 
 dotenv_path = Path('../../../.env')
 load_dotenv(dotenv_path=dotenv_path)
@@ -21,6 +23,21 @@ routes_collection = db["routes"]
 stops_collection = db["stops"]
 
 cache = TTLCache(maxsize=100000, ttl=60*60*24)
+
+adb = SQLAlchemy() #auth database stuff
+app.config['SECRET_KEY'] = os.getenv("appsecret")
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+adb.init_app(app)
+
+app.config["JWT_SECRET_KEY"] = os.getenv("jwtsecret")
+app.config['JWT_TOKEN_LOCATION'] = ['headers']
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
+jwt = JWTManager(app)
+
+# blueprint for authentication code
+from .auth import auth as auth_blueprint
+app.register_blueprint(auth_blueprint)
 
 async def fetch_all_data(collection_name, dataFilter=None, dbFilter=None, alwaysUseDb=False, saveToCache=True):
     if dbFilter is None:

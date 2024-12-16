@@ -1,6 +1,8 @@
 import os
 from datetime import timedelta
-from flask import Flask, jsonify
+
+import bcrypt
+from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 import pymongo as pm
 from pymongo import AsyncMongoClient
@@ -10,17 +12,16 @@ from pathlib import Path
 from flask_cors import CORS
 from cachetools import TTLCache
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
-
+from db import db
 dotenv_path = Path('../../../.env')
 load_dotenv(dotenv_path=dotenv_path)
 
 app = Flask(__name__)
 CORS(app)
 
-pym = AsyncMongoClient(os.getenv("mongodb"))
-db = pym["transitguesser"]
 routes_collection = db["routes"]
 stops_collection = db["stops"]
+users_collection = db["users"]
 
 cache = TTLCache(maxsize=100000, ttl=60*60*24)
 
@@ -29,15 +30,17 @@ app.config['SECRET_KEY'] = os.getenv("appsecret")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 adb.init_app(app)
 
-app.config["JWT_SECRET_KEY"] = os.getenv("jwtsecret")
+app.config["JWT_SECRET_KEY"] = os.getenv("secretkey")
 app.config['JWT_TOKEN_LOCATION'] = ['headers']
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 jwt = JWTManager(app)
 
+SECRET_KEY = os.getenv("secretkey")
+
 # blueprint for authentication code
-from .auth import auth as auth_blueprint
-app.register_blueprint(auth_blueprint)
+#from auth import auth as auth_blueprint
+#app.register_blueprint(auth_blueprint)
 
 async def fetch_all_data(collection_name, dataFilter=None, dbFilter=None, alwaysUseDb=False, saveToCache=True):
     if dbFilter is None:
@@ -122,6 +125,48 @@ async def getOperators():
                 operator_data[operator] = [route_description]
         cache["operators"] = operator_data
         return jsonify(operator_data)
+
+@app.route('/login', methods=['POST'])
+async def login():
+    # login code goes here
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+    user_match = await users_collection.find_one({ "email": email })
+    stored_hashed_password = user_match.get("password", None)
+    if user_match:
+        if bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password):
+            token = create_access_token(identity=email)
+            return jsonify(success=True, token=token)
+        else:
+            return jsonify(success=False, message='Invalid credentials')
+    else:
+        return jsonify(success=False, message='User not found')
+
+@app.route('/register', methods=['POST'])
+async def register():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+
+    # Check if the user already exists
+    existing_user = await users_collection.find_one({"email": email})
+    if existing_user:
+        return jsonify(success=False, message="User already exists")
+
+    # Hash the password
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+    # Store the new user in the database
+    await users_collection.insert_one({
+        "email": email,
+        "password": hashed_password
+    })
+
+    # Optionally, generate a JWT token for the user
+    token = create_access_token(identity=email)
+
+    return jsonify(success=True, token=token, message="User registered successfully")
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

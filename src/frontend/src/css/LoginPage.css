@@ -1,0 +1,38 @@
+.login-form {
+    display: flex;
+    flex-direction: column;
+    width: 90vw;
+    margin: 0 auto;
+}
+
+.login-form-object {
+    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+.login-form-entry {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-form-label {
+    color: white;
+}
+
+.login-form-entry input {
+    width: 20vw;
+    align-self: center;
+    border-radius: 8px;
+    border: 1px solid gray;
+}
+
+.login-form-object button[type="submit"] {
+    width: 20vw;
+    align-self: center;
+    border-radius: 8px;
+    background-color: lightgreen;
+}
+
+.login-error {
+    color: red;
+}

@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from "react-bootstrap/Navbar";
+import Navbar from '../components/Navbar';
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import "../css/HomePage.css";
@@ -17,19 +17,7 @@ const HomePage = (): React.ReactElement => {
     ]
     return (
         <div className="home-page">
-            <div className="home-navbar">
-                <Navbar expand="lg" className="bg-body-tertiary home-navbar-element">
-                    <Container style={{ marginLeft: "0", marginRight: "0" }}>
-                        <Navbar.Brand href="/">Transit Guesser</Navbar.Brand>
-                        <Navbar.Toggle aria-controls="basic-navbar-nav"/>
-                        <Navbar.Collapse id="basic-navbar-nav">
-                            <Nav className="me-auto">
-                                <Nav.Link href="/">Home</Nav.Link>
-                            </Nav>
-                        </Navbar.Collapse>
-                    </Container>
-                </Navbar>
-            </div>
+            <Navbar />
             <div className="home-main-section">
                 <h1 className="home-page-slogan">A classic trivia game, reimagined.</h1>
                 <div className="game-body">

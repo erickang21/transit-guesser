@@ -51,3 +51,8 @@ export type GameMode = {
     imageUrl: string;
     description: string;
 }
+
+export type AuthenticationResponse = {
+    success: boolean;
+    token: string | null;
+}

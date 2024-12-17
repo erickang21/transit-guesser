@@ -10,8 +10,11 @@ import { useNavigate } from "react-router-dom";
 import {handleRegister} from "../helpers/api";
 import {useAuth} from "../contexts/AuthContext";
 
+const USERNAME_REGEX = /^[a-zA-Z0-9_]+$/;
+
 const RegisterPage = (): React.ReactElement => {
     const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
@@ -23,16 +26,18 @@ const RegisterPage = (): React.ReactElement => {
         setError(null);
         if (password !== confirmPassword) {
             setError("Passwords need to match");
+        } else if (!USERNAME_REGEX.test(username)) {
+            setError("Username can only contain alphanumeric characters (A-Z, a-z, 0-9) and underscores.")
         } else {
-            const credentials = await handleRegister({ email, password });
+            const credentials = await handleRegister({ email, password, username });
             if (credentials.token !== null) {
-                login(credentials.token);
+                login(credentials);
                 navigate("/game");
-            } else{
-                setError("An errored happen during registration.")
+            } else {
+                setError(credentials.error)
             }
         }
-    }, [password, confirmPassword, email, navigate, login, setError]);
+    }, [password, confirmPassword, email, navigate, login, setError, username]);
 
     return (
         <div className="home-page">
@@ -60,6 +65,13 @@ const RegisterPage = (): React.ReactElement => {
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </div>
+                        <div className="login-form-entry">
+                            <label className="login-form-label">Username:</label>
+                            <input
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
                             />
                         </div>
                         <div className="login-form-entry">

@@ -1,24 +1,45 @@
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #51c6ab;
-    padding: 1rem 2rem;
-    height: 7.5vh;
-}
-
-.navbar-brand {
-    display: flex;
-    align-items: center;
-}
-
-.navbar-logo {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-}
-
 .navbar-image {
     width: 200px;
     height: 32px;
+    background: url("https://cdn.discordapp.com/attachments/520734295112024064/1318076464595337326/newver2-removebg-preview_1.png?ex=676101dd&is=675fb05d&hm=9d735c4f6b5500ca85b7cc8a1d8e4ce3b50fa2aa6426ffb35e4350b20ac93772&");
+    background-size: contain;   /* Scale the background to fit within the element */
+    background-repeat: no-repeat; /* Prevent background from repeating */
+    background-position: center;
+}
+
+.profile-section {
+    display: flex;
+    align-items: center;
+}
+
+.profile-img {
+    width: 50px;           /* Set a fixed width for the image */
+    height: 50px;          /* Set a fixed height for the image */
+    border-radius: 50%;    /* Makes the image circular */
+    object-fit: cover;     /* Ensures the image doesn't stretch/distort */
+    border: 2px solid #ccc; /* Optional: adds a border around the image */
+}
+
+.dropdown-info {
+    pointer-events: none;
+}
+
+.dropdown-info:hover {
+    cursor: default;
+    background-color: transparent;
+    color: inherit;
+}
+
+.dropdown-item .custom-button {
+    pointer-events: all; /* Enable interaction on the CustomButton */
+}
+
+.dropdown-item .custom-button:hover {
+    background-color: #f72720; /* Custom hover color for button */
+    cursor: pointer;
+}
+
+div[aria-labelledby="dropdown-basic-button"].dropdown-menu {
+    position: absolute;
+    left: -50px;
 }

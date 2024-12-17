@@ -4,7 +4,8 @@ export const DevEndpoints: Record<string, string> = {
     randomStop: "http://127.0.0.1:5001/randomStop",
     operators: "http://127.0.0.1:5001/operators",
     login: "http://127.0.0.1:5001/login",
-    register: "http://127.0.0.1:5001/register"
+    register: "http://127.0.0.1:5001/register",
+    addPoints: "http://127.0.0.1:5001/addPoints",
 }
 
 export const Endpoints: Record<string, string> = {

@@ -52,7 +52,18 @@ export type GameMode = {
     description: string;
 }
 
+export type AuthenticationRequest = {
+    email: string;
+    password: string;
+    username: string;
+}
+
 export type AuthenticationResponse = {
+    error: string | null;
     success: boolean;
     token: string | null;
+    username: string | null;
+    email: string | null;
+    level: number | null;
+    points: number | null;
 }

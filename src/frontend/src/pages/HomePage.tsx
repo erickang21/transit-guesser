@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from '../components/Navbar';
+import CustomNavbar from '../components/Navbar';
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import "../css/HomePage.css";
@@ -17,7 +17,7 @@ const HomePage = (): React.ReactElement => {
     ]
     return (
         <div className="home-page">
-            <Navbar />
+            <CustomNavbar />
             <div className="home-main-section">
                 <h1 className="home-page-slogan">A classic trivia game, reimagined.</h1>
                 <div className="game-body">

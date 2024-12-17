@@ -31,6 +31,7 @@
 
 # cache
 /src/backend/src/cache
+/src/backend/src/__pycache__
 
 #log files
 *.log

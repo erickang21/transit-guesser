@@ -1,0 +1,8 @@
+.custom-button {
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    padding: 10px 20px;      /* Adjust padding as needed */
+    border: none;
+    cursor: pointer;
+}

@@ -8,6 +8,9 @@ import {handleLogin} from "../helpers/api";
 import { GameMode } from "../types/types";
 import { useNavigate } from "react-router-dom";
 import {useAuth} from "../contexts/AuthContext";
+import CustomButton from "../components/CustomButton";
+
+const EMAIL_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
 
 const LoginPage = (): React.ReactElement => {
     const [email, setEmail] = useState('');
@@ -19,12 +22,17 @@ const LoginPage = (): React.ReactElement => {
     const handleSubmit = useCallback(async (e: FormEvent) => {
         e.preventDefault();
         setError(null);
-        const credentials = await handleLogin({ email, password});
+        let params = {
+            password,
+            ...(EMAIL_REGEX.test(email) ? { email, username: '' } : { username: email, email: ''})
+        };
+        const credentials = await handleLogin(params);
+        console.log("Credentials", credentials)
         if (credentials.token !== null) {
-            login(credentials.token);
+            login(credentials);
             navigate("/game");
         } else {
-            setError("An error occurred during login.");
+            setError(credentials.error);
         }
     }, [email, login, password, navigate, setError]);
 
@@ -48,9 +56,8 @@ const LoginPage = (): React.ReactElement => {
                 <div className="login-form">
                     <form onSubmit={handleSubmit} className="login-form-object">
                         <div className="login-form-entry">
-                            <label className="login-form-label">Email:</label>
+                            <label className="login-form-label">Username or Email:</label>
                             <input
-                                type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                             />
@@ -65,7 +72,9 @@ const LoginPage = (): React.ReactElement => {
                         </div>
                         <button type="submit">Login</button>
                         {error !== null && <span className="login-error">{error}</span>}
+                        <button style={{width: "10vw"}} onClick={() => navigate("/register")}>Register</button>
                     </form>
+
                 </div>
 
             </div>

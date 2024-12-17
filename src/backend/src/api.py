@@ -132,27 +132,40 @@ async def login():
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
-    user_match = await users_collection.find_one({ "email": email })
+    username = data.get('username')
+    if email == "" and username == "":
+        return jsonify(success=False, error='You must provide either a username or email.')
+    if password == "":
+        return jsonify(success=False, error='Password not provided.')
+    find_params = { "email": email } if email != '' else { "username": username }
+    user_match = await users_collection.find_one(find_params)
     stored_hashed_password = user_match.get("password", None)
     if user_match:
         if bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password):
             token = create_access_token(identity=email)
-            return jsonify(success=True, token=token)
+            username = user_match.get("username", None)
+            level = user_match.get("level", None)
+            points = user_match.get("points", None)
+            email = user_match.get("email", None)
+            return jsonify(success=True, token=token, username=username, level=level, points=points, email=email)
         else:
-            return jsonify(success=False, message='Invalid credentials')
+            return jsonify(success=False, error='Incorrect password.')
     else:
-        return jsonify(success=False, message='User not found')
+        return jsonify(success=False, error='User not found.')
 
 @app.route('/register', methods=['POST'])
 async def register():
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
-
+    username = data.get('username')
     # Check if the user already exists
     existing_user = await users_collection.find_one({"email": email})
     if existing_user:
-        return jsonify(success=False, message="User already exists")
+        return jsonify(success=False, error="This email has already been used. Try logging in.")
+    existing_user_username = await users_collection.find_one({"username": username})
+    if existing_user_username:
+        return jsonify(success=False, error="Username already taken. Please try another.")
 
     # Hash the password
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
@@ -160,13 +173,30 @@ async def register():
     # Store the new user in the database
     await users_collection.insert_one({
         "email": email,
-        "password": hashed_password
+        "password": hashed_password,
+        "username": username,
+        "level": 1,
+        "points": 0,
     })
 
     # Optionally, generate a JWT token for the user
     token = create_access_token(identity=email)
 
-    return jsonify(success=True, token=token, message="User registered successfully")
+    return jsonify(success=True, token=token, email=email, username=username, level=1, points=0)
+
+@app.route('/addPoints', methods=['POST'])
+async def addPoints():
+    data = request.get_json()
+    level = data.get('level')
+    points = data.get('points')
+    email = data.get('email')
+    # Check if the user already exists
+    user = await users_collection.find_one({"email": email})
+    if not user:
+        return jsonify(success=False, error="Invalid state.")
+
+    await users_collection.update_one({ "email": email }, { "$set": { "level": level, "points": points }})
+    return jsonify(success=True)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

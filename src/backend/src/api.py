@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 from flask_cors import CORS
 from cachetools import TTLCache
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, create_refresh_token
 from db import db
 dotenv_path = Path('../../../.env')
 load_dotenv(dotenv_path=dotenv_path)
@@ -142,12 +142,13 @@ async def login():
     stored_hashed_password = user_match.get("password", None)
     if user_match:
         if bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password):
-            token = create_access_token(identity=email)
+            token = create_access_token(identity=email, fresh=True)
+            refresh = create_refresh_token(identity=email)
             username = user_match.get("username", None)
             level = user_match.get("level", None)
             points = user_match.get("points", None)
             email = user_match.get("email", None)
-            return jsonify(success=True, token=token, username=username, level=level, points=points, email=email)
+            return jsonify(success=True, token=token, refresh=refresh, username=username, level=level, points=points, email=email)
         else:
             return jsonify(success=False, error='Incorrect password.')
     else:
@@ -180,9 +181,10 @@ async def register():
     })
 
     # Optionally, generate a JWT token for the user
-    token = create_access_token(identity=email)
+    token = create_access_token(identity=email, fresh=True)
+    refresh = create_refresh_token(identity=email)
 
-    return jsonify(success=True, token=token, email=email, username=username, level=1, points=0)
+    return jsonify(success=True, token=token, refresh=refresh, email=email, username=username, level=1, points=0)
 
 @app.route('/addPoints', methods=['POST'])
 async def addPoints():
@@ -197,6 +199,28 @@ async def addPoints():
 
     await users_collection.update_one({ "email": email }, { "$set": { "level": level, "points": points }})
     return jsonify(success=True)
+
+@app.route('/refresh', methods=['POST'])
+@jwt_required(refresh=True)
+def refresh():
+    user_id = get_jwt_identity()
+    access_token = create_access_token(identity=user_id, fresh=False)
+    return jsonify({'message': 'ACCESS REFRESH SUCCESS!', 'access_token': access_token})
+
+@app.route('/check', methods=['POST'])
+@jwt_required()
+def check(): # check if our access token is still active
+    return jsonify({'message': 'ACCESS CHECK SUCCESS!'})
+
+@app.route('/checkfresh', methods=['POST'])
+@jwt_required(fresh=True)
+def checkFresh(): # required for more dangerous changes like a password change
+    return jsonify({'message': 'FRESH TOKEN CHECK SUCCESS!'})
+
+@app.route('/checklogin', methods=['POST'])
+@jwt_required(refresh=True)
+def checkLogin(): # check if we need to re-login because our refresh token is expired
+    return jsonify({'message': 'REFRESH (LOGIN) TOKEN CHECK SUCCESS!'})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

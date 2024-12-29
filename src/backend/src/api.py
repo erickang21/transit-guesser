@@ -133,11 +133,13 @@ async def login():
     password = data.get('password')
     username = data.get('username')
     if email == "" and username == "":
-        return jsonify(success=False, error='You must provide either a username or email.')
+        return jsonify(success=False, error='Username/Email missing.')
     if password == "":
         return jsonify(success=False, error='Password not provided.')
     find_params = { "email": email } if email != '' else { "username": username }
     user_match = await users_collection.find_one(find_params)
+    if not user_match:
+        return jsonify(success=False, error='Email does not exist.')
     stored_hashed_password = user_match.get("password", None)
     if user_match:
         if bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password):

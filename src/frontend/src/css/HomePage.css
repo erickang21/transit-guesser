@@ -17,7 +17,6 @@
     display: flex;
     width: 100vw;
     justify-content: center;
-
 }
 
 .game-mode-selector {
@@ -34,7 +33,7 @@
 .game-mode-display {
     display: flex;
     flex-direction: column;
-    padding: 1rem 0;
+    padding: 1rem;
 }
 
 .game-mode-play {

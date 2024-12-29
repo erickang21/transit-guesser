@@ -1,8 +1,17 @@
 .custom-button {
     display: flex;
-    justify-content: center; /* Centers horizontally */
-    align-items: center;     /* Centers vertically */
-    padding: 10px 20px;      /* Adjust padding as needed */
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 10px 20px;
     border: none;
     cursor: pointer;
+    background-color: #3498db !important;
+}
+
+.custom-button:hover {
+    background-color: #2980b9;
+    transition: transform 0.2s ease;
+    &:hover {
+        transform: scale(1.05);
+    }
 }

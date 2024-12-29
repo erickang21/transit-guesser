@@ -1,8 +1,17 @@
+.home-page-slogan {
+    margin-bottom: 2rem;
+}
+
 .login-form {
     display: flex;
     flex-direction: column;
-    width: 90vw;
+    width: 25vw;
     margin: 0 auto;
+    color: white;
+    border: 1px solid cadetblue;
+    border-radius: 0.25rem;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 1rem;
 }
 
 .login-form-object {
@@ -35,4 +44,12 @@
 
 .login-error {
     color: red;
+}
+
+.register-text {
+    color: #3498db
+}
+
+.register-text:hover {
+    color: #2980b9
 }

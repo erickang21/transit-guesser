@@ -2,6 +2,14 @@
     margin-top: 0;
     color: white;
     font-size: 20px;
+    margin-bottom: 2rem;
+}
+
+.form-label-subtext {
+    color: #b6b6b6 !important;
+    margin-top: 0rem !important;
+    margin-bottom: 0.5rem;
+    align-self: flex-start;
 }
 
 .register-error {

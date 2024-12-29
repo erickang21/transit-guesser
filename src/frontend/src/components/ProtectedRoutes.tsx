@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useLayoutEffect} from 'react';
 import { Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -7,8 +7,11 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-    const { isAuthenticated } = useAuth();
-
+    const { isAuthenticated, initializing } = useAuth();
+    console.log("Is authenticated", isAuthenticated)
+    if (initializing) {
+        return <>Loading...</>
+    }
     if (!isAuthenticated) {
         return <Navigate to="/login" replace />;
     }

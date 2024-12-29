@@ -77,6 +77,36 @@ export const handleLogin = async ({ email, password, username }: AuthenticationR
     }
 }
 
+export const loginOnReturn = async ({ token }: { token: string }) => {
+    const endpoints: Record<string, string> = process.env.NODE_ENV === "development" ? DevEndpoints : Endpoints;
+    try {
+        const response = await axios.post(endpoints.restoreSession, { token },
+            { headers: { 'Content-Type': 'application/json' }});
+        return {
+            success: response.data.success,
+            email: response.data.email,
+            username: response.data.username,
+            level: response.data.level,
+            points: response.data.points,
+        };
+    } catch (err) {
+        throw new Error(`\`Error completing registration: ${err}`)
+    }
+}
+
+export const handleLogout = async ({ email }: { email: string }) => {
+    const endpoints: Record<string, string> = process.env.NODE_ENV === "development" ? DevEndpoints : Endpoints;
+    try {
+        const response = await axios.post(endpoints.logout, { email },
+            { headers: { 'Content-Type': 'application/json' }});
+        return {
+            success: response.data.success,
+        };
+    } catch (err) {
+        throw new Error(`\`Error completing registration: ${err}`)
+    }
+}
+
 export const handleRegister = async ({ email, password, username }: AuthenticationRequest): Promise<AuthenticationResponse> => {
     const endpoints: Record<string, string> = process.env.NODE_ENV === "development" ? DevEndpoints : Endpoints;
     try {

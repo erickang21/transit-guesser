@@ -1,7 +1,7 @@
 .navbar-image {
     width: 200px;
     height: 32px;
-    background: url("https://cdn.discordapp.com/attachments/520734295112024064/1318076464595337326/newver2-removebg-preview_1.png?ex=676101dd&is=675fb05d&hm=9d735c4f6b5500ca85b7cc8a1d8e4ce3b50fa2aa6426ffb35e4350b20ac93772&");
+    background: url("https://i.postimg.cc/BbHgPYJX/newver2-removebg-preview-1.png");
     background-size: contain;   /* Scale the background to fit within the element */
     background-repeat: no-repeat; /* Prevent background from repeating */
     background-position: center;
@@ -10,6 +10,7 @@
 .profile-section {
     display: flex;
     align-items: center;
+    margin-right: 1rem;
 }
 
 .profile-img {

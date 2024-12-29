@@ -10,12 +10,14 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 import { Dropdown } from 'react-bootstrap';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import {pointsForLevel} from "../contexts/AuthContext";
+import {handleLogout} from "../helpers/api";
 
 const CustomNavbar = () => {
-    const { username, level, points, logout } = useAuth();
+    const { email, username, level, points, logout, isAuthenticated } = useAuth();
+    console.log(username, level, points, isAuthenticated)
     const navigate = useNavigate();
     const levelUpProgress = useMemo(() => (points! / pointsForLevel(level!)) * 100, [points, level])
-    if (username === null || level === null || points === null) {
+    if (email === null || username === null || level === null || points === null) {
         return (
             <div style={{width: "100vw"}}>
                 <Navbar expand="lg" className="bg-body-tertiary home-navbar-element">
@@ -68,6 +70,7 @@ const CustomNavbar = () => {
                                     <Dropdown.Item className="dropdown-info">
                                         <CustomButton colorScheme="danger" onClick={() => {
                                             logout();
+                                            handleLogout({ email });
                                             navigate("/");
                                         }}>
                                             <span>Logout</span>

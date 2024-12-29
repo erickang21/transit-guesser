@@ -5,9 +5,11 @@ import Nav from "react-bootstrap/Nav";
 import "../css/HomePage.css";
 import { GameMode } from "../types/types";
 import { useNavigate } from "react-router-dom";
+import {useAuth} from "../contexts/AuthContext";
 
 const HomePage = (): React.ReactElement => {
     const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
     const gameModes: GameMode[] = [
         {
             name: "Classic",
@@ -29,7 +31,7 @@ const HomePage = (): React.ReactElement => {
                                     <img style={{alignSelf: "center", margin: "1rem 0"}}
                                          src="https://i.postimg.cc/BQND66YQ/IMG-3210.jpg" width="75%" height="65%"/>
                                     <span>{gameMode.description}</span>
-                                    <button className="game-mode-play" onClick={() => navigate("/game")}>
+                                    <button className="game-mode-play" onClick={() => navigate(isAuthenticated ? "/game" : "/login")}>
                                         <span className="game-mode-play-button-text">Let's play!</span>
                                     </button>
                                 </div>

@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useMemo, useState} from 'react';
 import "../css/components/AnswerBox.css";
 import { IoIosCheckmark } from "react-icons/io";
 import { ImCross } from "react-icons/im";
@@ -8,6 +8,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import {RandomStopResponse} from "../types/types";
 import {MainGameContext} from "../contexts/MainGameContext";
+import {useAuth} from "../contexts/AuthContext";
 
 const AnswerBox = (): React.ReactElement => {
     // Game mechanics
@@ -20,6 +21,9 @@ const AnswerBox = (): React.ReactElement => {
     const [selectedRouteValue, setSelectedRouteValue] = useState('');
 
     const { correctAnswers, operatorData, getNewData } = useContext(MainGameContext);
+    const { addPoints } = useAuth();
+
+    const roundOver = useMemo(() => strikes === 3 || guessStep === 2, [strikes, guessStep]);
 
     const handleOperatorChange = (event: any) => {
         setSelectedOperatorValue(event.target.value)
@@ -28,9 +32,17 @@ const AnswerBox = (): React.ReactElement => {
     const handleRouteChange = (event: any) => {
         setSelectedRouteValue(event.target.value)
     }
+
+    const calculatePoints = useCallback(() => {
+        let basePoints = strikes === 3 ? 50 : 400;
+        if (strikes === 0) basePoints += 100;
+        return basePoints;
+    }, [strikes]);
+
     const verifyGuess = useCallback(() => {
         setWrongAnswer(false);
         setGuessed(true);
+        let isOver = false;
         if (guessStep === 0) { // Currently guessing transit operator.
             const correctOperators = Object.keys(correctAnswers);
             console.log("correct operators ", correctOperators)
@@ -38,6 +50,7 @@ const AnswerBox = (): React.ReactElement => {
             if (correctOperators.includes(selectedOperatorValue)) { // Correct!
                 setGuessStep((prev) => prev + 1);
             } else {
+                if (strikes === 2) isOver = true;
                 setStrikes((prev) => (prev < 3 ? prev + 1 : prev));
                 setWrongAnswer(true);
             }
@@ -47,12 +60,18 @@ const AnswerBox = (): React.ReactElement => {
             console.log("Selected route", selectedRouteValue);
             if (correctRoutes.includes(selectedRouteValue)) {
                 setGuessStep((prev) => prev + 1);
+                isOver = true;
             } else {
+                if (strikes === 2) isOver = true;
                 setStrikes((prev) => (prev < 3 ? prev + 1 : prev));
                 setWrongAnswer(true);
             }
         }
-    }, [guessStep, correctAnswers, selectedOperatorValue, selectedRouteValue])
+        if (isOver) {
+            console.log("Calculated points: ", calculatePoints());
+            addPoints(calculatePoints());
+        }
+    }, [guessStep, correctAnswers, selectedOperatorValue, strikes, selectedRouteValue, calculatePoints, addPoints])
 
     const goToNextRound = useCallback(() => {
         setStrikes(0);
@@ -62,12 +81,6 @@ const AnswerBox = (): React.ReactElement => {
         setSelectedOperatorValue('');
         setSelectedRouteValue('');
     }, [getNewData])
-
-    const calculatePoints = useCallback(() => {
-        let basePoints = strikes === 3 ? 50 : 400;
-        if (strikes === 0) basePoints += 100;
-        return basePoints;
-    }, [strikes]);
 
     const AnswerBoxSuccessMessage = (): React.ReactElement => (
         <span className="answer-box-result-success">{guessStep === 1 ? "Amazing work! Now guess the route." : guessStep === 2 ? "Flawless!" : ""}</span>

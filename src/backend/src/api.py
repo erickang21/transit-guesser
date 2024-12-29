@@ -128,7 +128,6 @@ async def getOperators():
 
 @app.route('/login', methods=['POST'])
 async def login():
-    # login code goes here
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
@@ -144,6 +143,9 @@ async def login():
         if bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password):
             token = create_access_token(identity=email, fresh=True)
             refresh = create_refresh_token(identity=email)
+            # Update tokens in database
+            await users_collection.update_one(find_params, { "$set": { "token": token, "refresh": refresh }})
+            # Return user data
             username = user_match.get("username", None)
             level = user_match.get("level", None)
             points = user_match.get("points", None)
@@ -153,6 +155,21 @@ async def login():
             return jsonify(success=False, error='Incorrect password.')
     else:
         return jsonify(success=False, error='User not found.')
+
+@app.route('/restore-session', methods=['POST'])
+async def restore_session():
+    data = request.get_json()
+    token = data.get('token')
+    if not token:
+        return jsonify(success=False, error='User not logged in.')
+    user_match = await users_collection.find_one({ "token": token })
+    if not user_match:
+        return jsonify(success=False, error='Invalid state.')
+    username = user_match.get("username", None)
+    level = user_match.get("level", None)
+    points = user_match.get("points", None)
+    email = user_match.get("email", None)
+    return jsonify(success=True, username=username, level=level, points=points, email=email)
 
 @app.route('/register', methods=['POST'])
 async def register():
@@ -170,6 +187,9 @@ async def register():
 
     # Hash the password
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    # Generate a token to log in the user after registration
+    token = create_access_token(identity=email, fresh=True)
+    refresh = create_refresh_token(identity=email)
 
     # Store the new user in the database
     await users_collection.insert_one({
@@ -178,13 +198,20 @@ async def register():
         "username": username,
         "level": 1,
         "points": 0,
+        "token": token,
+        "refresh": refresh
     })
-
-    # Optionally, generate a JWT token for the user
-    token = create_access_token(identity=email, fresh=True)
-    refresh = create_refresh_token(identity=email)
-
     return jsonify(success=True, token=token, refresh=refresh, email=email, username=username, level=1, points=0)
+
+@app.route('/logout', methods=['POST'])
+async def logout():
+    data = request.get_json()
+    email = data.get('email')
+    user = await users_collection.find_one({"email": email})
+    if not user:
+        return jsonify(success=False, error="Invalid state.")
+    await users_collection.update_one({ "email": email }, { "$set": { "token": None, "refresh": None }})
+    return jsonify(success=True)
 
 @app.route('/addPoints', methods=['POST'])
 async def addPoints():

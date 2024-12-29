@@ -1,11 +1,13 @@
 import React, {createContext, useState, useContext, useEffect, useCallback} from 'react';
 import {AuthenticationResponse} from "../types/types";
-import {handleUpdatePoints} from "../helpers/api";
+import {handleUpdatePoints, loginOnReturn} from "../helpers/api";
 
 interface AuthContextType {
     addPoints: (pointsToAdd: number) => Promise<number | undefined>;
     error: string | null;
     email: string | null;
+    handleReturningUser: () => Promise<void>;
+    initializing: boolean;
     isAuthenticated: boolean;
     level: number | null;
     login: (credentials: AuthenticationResponse) => void;
@@ -20,6 +22,8 @@ const AuthContext = createContext<AuthContextType>({
     addPoints: async () => { return undefined; },
     error: null,
     email: null,
+    handleReturningUser: async () => {},
+    initializing: true,
     isAuthenticated: false,
     level: null,
     login: () => {},
@@ -51,14 +55,30 @@ export const AuthProvider = ({ children }: { children: React.ReactElement }) => 
     const [level, setLevel] = useState<number | null>(null);
     const [points, setPoints] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [initializing, setInitializing] = useState(true);
 
-    useEffect(() => {
+    const handleReturningUser = useCallback(async () => {
         const token = localStorage.getItem('authToken');
+        // If user has a token cached, log them back in
         if (token) {
             setIsAuthenticated(true);
+            console.log("Set authenticated true")
             setToken(token);
+            const user = await loginOnReturn({ token} )
+            console.log("Ran this function", user)
+            if (user.email !== undefined && user.username !== undefined && user.level !== undefined && user.points !== undefined) {
+                setEmail(user.email)
+                setUsername(user.username)
+                setLevel(user.level)
+                setPoints(user.points)
+            }
         }
-    }, [setIsAuthenticated, setToken]);
+        setInitializing(false);
+    }, []);
+
+    useEffect(() => {
+        handleReturningUser();
+    }, [handleReturningUser]);
 
     const login = useCallback((credentials: AuthenticationResponse) => {
         if (credentials.token && credentials.username && credentials.level !== null && credentials.points !== null && credentials.email) {
@@ -90,7 +110,7 @@ export const AuthProvider = ({ children }: { children: React.ReactElement }) => 
         if (points !== null && level !== null && email != null) {
             let newPoints = points + pointsToAdd;
             let newLevel = level;
-            while (newPoints > pointsForLevel(newLevel)) {
+            while (newPoints >= pointsForLevel(newLevel)) {
                 newPoints -= pointsForLevel(newLevel);
                 newLevel += 1;
                 if (!leveledUp) leveledUp = true;
@@ -111,7 +131,7 @@ export const AuthProvider = ({ children }: { children: React.ReactElement }) => 
     }, [points, level, email]);
 
     return (
-        <AuthContext.Provider value={{ addPoints, error, email, isAuthenticated, level, login, logout, points, setError, token, username }}>
+        <AuthContext.Provider value={{ addPoints, error, email, handleReturningUser, initializing, isAuthenticated, level, login, logout, points, setError, token, username }}>
             {children}
         </AuthContext.Provider>
     );

@@ -1,8 +1,5 @@
-import React, {useState, useEffect, useContext} from 'react';
-import {Coordinate, RandomStopResponse, Route, Stop} from "../types/types";
-import {getAllStops, getRandomStop} from "../helpers/api";
+import React from 'react';
 import MainGame from "../components/MainGame";
-import {MainGameContext} from "../contexts/MainGameContext";
 import { useLocation } from "react-router-dom";
 
 const MainGamePage = (): React.ReactElement => {

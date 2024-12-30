@@ -1,9 +1,5 @@
-import React, {useCallback, useEffect, useLayoutEffect, useMemo, useState} from 'react';
-import {Coordinate, Stop} from "../types/types";
+import React, {useCallback, useState} from 'react';
 import Map from "./Map";
-import Nav from "react-bootstrap/Nav";
-import Navbar from "react-bootstrap/Navbar";
-import Container from 'react-bootstrap/Container';
 import "../css/home.css";
 import AnswerBox from "./AnswerBox";
 import CustomNavbar from "./Navbar";

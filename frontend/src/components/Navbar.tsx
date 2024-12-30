@@ -1,7 +1,6 @@
 import React, {useLayoutEffect, useMemo, useState} from 'react';
-import {Link, useLocation, useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import "../css/components/Navbar.css";
-import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 import {useAuth} from "../contexts/AuthContext";
@@ -13,7 +12,6 @@ import {pointsForLevel} from "../contexts/AuthContext";
 import {handleLogout} from "../helpers/api";
 import { AiOutlineQuestionCircle } from "react-icons/ai";
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 
@@ -36,7 +34,6 @@ type CustomNavbarProps = {
 
 const CustomNavbar = ({ showTutorial = false, showTutorialIcon = false }: CustomNavbarProps) => {
     const { email, username, level, points, logout, isAuthenticated } = useAuth();
-    console.log(username, level, points, isAuthenticated)
     const navigate = useNavigate();
     const routerLocation = useLocation();
     const levelUpProgress = useMemo(() => (points! / pointsForLevel(level!)) * 100, [points, level])
@@ -93,11 +90,6 @@ const CustomNavbar = ({ showTutorial = false, showTutorialIcon = false }: Custom
                                         <AiOutlineQuestionCircle color="black" size="30px"/>
                                     </CustomButton>
                                 )}
-                                {/*<img
-                                    src="https://images-ext-1.discordapp.net/external/NaJAhOcsQ33ZRMWHegBuUzRb4EI9GyUcSDFR7Rb9i0Y/%3Fsize%3D4096/https/cdn.discordapp.com/avatars/304737539846045696/29bdf89ef0acf3a07f7cd56340447bc5.png?format=webp&quality=lossless&width=640&height=640"  // Replace with your profile image URL
-                                    alt="Profile"
-                                    className="profile-img ms-3"
-                                />*/}
                                 <DropdownButton drop="down-centered" id="dropdown-basic-button" title={username}>
                                     <Dropdown.Item className="dropdown-info">
                                         <div style={{

@@ -1,11 +1,7 @@
 import React, {FormEvent, useCallback, useState} from 'react';
-import Navbar from "react-bootstrap/Navbar";
-import Container from "react-bootstrap/Container";
-import Nav from "react-bootstrap/Nav";
 import "../css/HomePage.css";
 import "../css/LoginPage.css";
 import {handleLogin} from "../helpers/api";
-import { GameMode } from "../types/types";
 import { useNavigate } from "react-router-dom";
 import {useAuth} from "../contexts/AuthContext";
 import CustomButton from "../components/CustomButton";
@@ -45,31 +41,6 @@ const LoginPage = (): React.ReactElement => {
             <CustomNavbar />
             <div className="home-main-section">
                 <h1 className="home-page-slogan">Next stop: infinite fun.</h1>
-                {/*
-                <div className="login-form">
-                    <form onSubmit={handleSubmit} className="login-form-object">
-                        <div className="login-form-entry">
-                            <label className="login-form-label">Username or Email:</label>
-                            <input
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
-                        <div className="login-form-entry">
-                            <label className="login-form-label">Password:</label>
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </div>
-                        <button type="submit">Login</button>
-                        {error !== null && <span className="login-error">{error}</span>}
-                        <button style={{width: "10vw"}} onClick={() => navigate("/register")}>Register</button>
-                    </form>
-
-                </div>
-                */}
                 <Form className="login-form" onSubmit={handleSubmit}>
                     <Form.Group className="mb-3 d-flex flex-column" controlId="formBasicEmail">
                         <Form.Label className="align-self-start">Email address/Username</Form.Label>

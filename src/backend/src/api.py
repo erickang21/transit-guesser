@@ -1,6 +1,6 @@
 import os
 from datetime import timedelta
-
+import re
 import bcrypt
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
@@ -109,6 +109,7 @@ async def getOperators():
         return jsonify(cache["operators"])
     else:
         route_data = await fetch_all_data("routes")
+        route_data = sorted(route_data, key=lambda x: int(re.sub(r'\D', '', x['number'])))
         operator_data = {}
         for route in route_data:
             operator = getAliases(route["operator"])

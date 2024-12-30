@@ -28,12 +28,12 @@ const AnswerBox = ({ onLevelUp }: AnswerBoxProps): React.ReactElement => {
 
     const roundOver = useMemo(() => strikes === 3 || guessStep === 2, [strikes, guessStep]);
 
-    const handleOperatorChange = (event: any) => {
-        setSelectedOperatorValue(event.target.value)
+    const handleOperatorChange = (operator: string) => {
+        setSelectedOperatorValue(operator)
     }
 
-    const handleRouteChange = (event: any) => {
-        setSelectedRouteValue(event.target.value)
+    const handleRouteChange = (route: string) => {
+        setSelectedRouteValue(route)
     }
 
     const calculatePoints = useCallback(() => {
@@ -132,28 +132,40 @@ const AnswerBox = ({ onLevelUp }: AnswerBoxProps): React.ReactElement => {
                     {strikes === 3 && <ImCross style={{color: "red"}}/>}
                     {guessStep >= 1 && strikes !== 3 && <IoIosCheckmark style={{color: "green"}}/>}
                 </div>
-                <select
-                    className="answer-box-operator-select"
-                    id="options"
-                    value={selectedOperatorValue}
-                    onChange={handleOperatorChange}
-                    disabled={guessStep !== 0 || strikes === 3}
-                    style={guessStep === 1 && strikes !== 3 ? {border: "1px solid green"} : {}}
-                >
-                    <option value="">Choose an option...</option>
-                    {Object.keys(operatorData).map((operator) => (
-                        <option value={operator}>{operator}</option>
-                    ))}
-                </select>
+                <Dropdown>
+                    <Dropdown.Toggle
+                        disabled={guessStep !== 0 || strikes === 3}
+                        id="dropdown-basic"
+                        style={{
+                            border: guessStep > 0 && strikes !== 3 ? "1px solid green" : "1px solid black",
+                            width: "100%",
+                            background: "none",
+                            color: "black",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis"
+                    }}>
+                        <span style={{ maxWidth: "100%"}}>{selectedOperatorValue.length ? selectedOperatorValue : "Select an operator..."}</span>
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu style={{ maxHeight: '200px', overflowY: 'auto', scrollbarWidth: 'thin' }}>
+                        {Object.keys(operatorData).map((operator, index) => (
+                            <Dropdown.Item
+                                key={`route-operator-${index}`}
+                                onClick={() => handleOperatorChange(operator)}
+                                active={selectedOperatorValue === operator}
+                            >{operator}</Dropdown.Item>
+                        ))}
+                    </Dropdown.Menu>
+                </Dropdown>
             </div>
             {guessStep >= 1 && (
                 <div className="answer-box-form">
                     <div className="answer-box-text">
-                        <span className="answer-box-input-header">Route Number:</span>
+                        <span className="answer-box-input-header">Route:</span>
                         {strikes === 3 && <ImCross style={{color: "red"}}/>}
                         {guessStep > 1 && strikes !== 3 && <IoIosCheckmark style={{color: "green"}}/>}
                     </div>
-                    <select
+                    {/*<select
                         className="answer-box-operator-select"
                         id="options"
                         value={selectedRouteValue}
@@ -165,7 +177,18 @@ const AnswerBox = ({ onLevelUp }: AnswerBoxProps): React.ReactElement => {
                         {operatorData[selectedOperatorValue].map((route) => (
                             <option value={route}>{route}</option>
                         ))}
-                    </select>
+                    </select>*/}
+                    <Dropdown>
+                        <Dropdown.Toggle disabled={guessStep !== 1 || strikes === 3} id="dropdown-basic" style={{ border: guessStep > 1 && strikes !== 3 ? "1px solid green" : "1px solid black",width: "100%", background: "none", color: "black", overflow: "hidden", textOverflow: "ellipsis"}}>
+                            <span style={{ maxWidth: "100%"}}>{selectedRouteValue.length ? selectedRouteValue : "Select a route..."}</span>
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu style={{ maxHeight: '200px', overflowY: 'auto', scrollbarWidth: 'thin' }}>
+                            {operatorData[selectedOperatorValue].map((route, index) => (
+                                <Dropdown.Item key={`route-dropdown-${index}`} onClick={() => handleRouteChange(route)} active={selectedRouteValue === route}>{route}</Dropdown.Item>
+                            ))}
+                        </Dropdown.Menu>
+                    </Dropdown>
                 </div>
             )}
             {(guessStep === 2 || strikes === 3) && (

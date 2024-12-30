@@ -66,18 +66,18 @@ def getAliases(operator_name):
     return aliases.get(operator_name.lower(), operator_name)
 
 
-@app.route('/routes', methods=['GET', 'OPTIONS'])
+@app.route('/api/routes', methods=['GET', 'OPTIONS'])
 async def get_routes():
     response = await fetch_all_data("routes")
     return jsonify(response)
 
-@app.route('/stops', methods=['GET', 'OPTIONS'])
+@app.route('/api/stops', methods=['GET', 'OPTIONS'])
 async def get_stops():
     response = fetch_all_data("stops",
                    lambda data: list(filter(lambda entry: len(entry.get("routes", [])) > 0 and entry.get("longitude", 0) and entry.get("latitude", 0), data)))
     return jsonify(response)
 
-@app.route('/randomStop', methods=['GET', 'OPTIONS'])
+@app.route('/api/randomStop', methods=['GET', 'OPTIONS'])
 async def get_random_stops():
     correct_routes = {}
     data = {}
@@ -103,7 +103,7 @@ async def get_random_stops():
         data["correctRoutes"] = correct_routes
     return jsonify(data)
 
-@app.route('/operators', methods=['GET', 'OPTIONS'])
+@app.route('/api/operators', methods=['GET', 'OPTIONS'])
 async def getOperators():
     if cache.get("operators", None):
         return jsonify(cache["operators"])
@@ -127,7 +127,7 @@ async def getOperators():
         cache["operators"] = operator_data
         return jsonify(operator_data)
 
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 async def login():
     data = request.get_json()
     email = data.get('email')
@@ -159,7 +159,7 @@ async def login():
     else:
         return jsonify(success=False, error='User not found.')
 
-@app.route('/restore-session', methods=['POST'])
+@app.route('/api/restore-session', methods=['POST'])
 async def restore_session():
     data = request.get_json()
     token = data.get('token')
@@ -174,7 +174,7 @@ async def restore_session():
     email = user_match.get("email", None)
     return jsonify(success=True, username=username, level=level, points=points, email=email)
 
-@app.route('/register', methods=['POST'])
+@app.route('/api/register', methods=['POST'])
 async def register():
     data = request.get_json()
     email = data.get('email')
@@ -206,7 +206,7 @@ async def register():
     })
     return jsonify(success=True, token=token, refresh=refresh, email=email, username=username, level=1, points=0)
 
-@app.route('/logout', methods=['POST'])
+@app.route('/api/logout', methods=['POST'])
 async def logout():
     data = request.get_json()
     email = data.get('email')
@@ -216,7 +216,7 @@ async def logout():
     await users_collection.update_one({ "email": email }, { "$set": { "token": None, "refresh": None }})
     return jsonify(success=True)
 
-@app.route('/addPoints', methods=['POST'])
+@app.route('/api/addPoints', methods=['POST'])
 async def addPoints():
     data = request.get_json()
     level = data.get('level')
@@ -230,24 +230,24 @@ async def addPoints():
     await users_collection.update_one({ "email": email }, { "$set": { "level": level, "points": points }})
     return jsonify(success=True)
 
-@app.route('/refresh', methods=['POST'])
+@app.route('/api/refresh', methods=['POST'])
 @jwt_required(refresh=True)
 def refresh():
     user_id = get_jwt_identity()
     access_token = create_access_token(identity=user_id, fresh=False)
     return jsonify({'message': 'ACCESS REFRESH SUCCESS!', 'access_token': access_token})
 
-@app.route('/check', methods=['POST'])
+@app.route('/api/check', methods=['POST'])
 @jwt_required()
 def check(): # check if our access token is still active
     return jsonify({'message': 'ACCESS CHECK SUCCESS!'})
 
-@app.route('/checkfresh', methods=['POST'])
+@app.route('/api/checkfresh', methods=['POST'])
 @jwt_required(fresh=True)
 def checkFresh(): # required for more dangerous changes like a password change
     return jsonify({'message': 'FRESH TOKEN CHECK SUCCESS!'})
 
-@app.route('/checklogin', methods=['POST'])
+@app.route('/api/checklogin', methods=['POST'])
 @jwt_required(refresh=True)
 def checkLogin(): # check if we need to re-login because our refresh token is expired
     return jsonify({'message': 'REFRESH (LOGIN) TOKEN CHECK SUCCESS!'})
@@ -255,4 +255,4 @@ def checkLogin(): # check if we need to re-login because our refresh token is ex
 if __name__ == '__main__':
     #app.run(debug=True, port=5001)
     from waitress import serve
-    serve(app, host="0.0.0.0", port=8080)
+    serve(app, host="127.0.0.1", port=5000)

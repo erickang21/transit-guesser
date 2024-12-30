@@ -11,8 +11,13 @@ export const DevEndpoints: Record<string, string> = {
 }
 
 export const Endpoints: Record<string, string> = {
-    routes: "",
-    stops: "",
-    randomStop: "",
-    operators: "",
+    routes: "https://transitguesser.me/api/routes",
+    stops: "https://transitguesser.me/api/stops",
+    randomStop: "https://transitguesser.me/api/randomStop",
+    operators: "https://transitguesser.me/api/operators",
+    login: "https://transitguesser.me/api/login",
+    logout: "https://transitguesser.me/api/logout",
+    register: "https://transitguesser.me/api/register",
+    addPoints: "https://transitguesser.me/api/addPoints",
+    restoreSession: "https://transitguesser.me/api/restore-session"
 }

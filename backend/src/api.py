@@ -12,12 +12,18 @@ from pathlib import Path
 from flask_cors import CORS
 from cachetools import TTLCache
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, create_refresh_token
-from db import db
 dotenv_path = Path('../../../.env')
 load_dotenv(dotenv_path=dotenv_path)
 
 app = Flask(__name__)
 CORS(app)
+try:
+    print("Attempting to connect to MongoDB: ", os.getenv("mongodb"))
+    pym = AsyncMongoClient(os.getenv("mongodb"))
+    db = pym["transitguesser"]
+    print("Successfully connected to MongoDB.")
+except Exception as e:
+    print("Error connecting to database: ", e)
 
 routes_collection = db["routes"]
 stops_collection = db["stops"]

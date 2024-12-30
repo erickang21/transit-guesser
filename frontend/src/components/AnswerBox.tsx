@@ -1,12 +1,9 @@
-import React, {useCallback, useContext, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useContext, useState} from 'react';
 import "../css/components/AnswerBox.css";
 import { IoIosCheckmark } from "react-icons/io";
 import { ImCross } from "react-icons/im";
-import {getOperators, getRandomStop} from "../helpers/api";
 import { RxCross1 } from "react-icons/rx";
 import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
-import {RandomStopResponse} from "../types/types";
 import {MainGameContext} from "../contexts/MainGameContext";
 import {useAuth} from "../contexts/AuthContext";
 
@@ -25,8 +22,6 @@ const AnswerBox = ({ onLevelUp }: AnswerBoxProps): React.ReactElement => {
 
     const { correctAnswers, operatorData, getNewData } = useContext(MainGameContext);
     const { addPoints, level } = useAuth();
-
-    const roundOver = useMemo(() => strikes === 3 || guessStep === 2, [strikes, guessStep]);
 
     const handleOperatorChange = (operator: string) => {
         setSelectedOperatorValue(operator)
@@ -49,8 +44,6 @@ const AnswerBox = ({ onLevelUp }: AnswerBoxProps): React.ReactElement => {
         let isOver = false;
         if (guessStep === 0) { // Currently guessing transit operator.
             const correctOperators = Object.keys(correctAnswers);
-            console.log("correct operators ", correctOperators)
-            console.log("selected", selectedOperatorValue)
             if (correctOperators.includes(selectedOperatorValue)) { // Correct!
                 setGuessStep((prev) => prev + 1);
             } else {
@@ -60,8 +53,6 @@ const AnswerBox = ({ onLevelUp }: AnswerBoxProps): React.ReactElement => {
             }
         } else if (guessStep === 1) {
             const correctRoutes = correctAnswers[selectedOperatorValue];
-            console.log("Selected operator", selectedOperatorValue, correctAnswers[selectedOperatorValue]);
-            console.log("Selected route", selectedRouteValue);
             if (correctRoutes.includes(selectedRouteValue)) {
                 setGuessStep((prev) => prev + 1);
                 isOver = true;
@@ -72,7 +63,6 @@ const AnswerBox = ({ onLevelUp }: AnswerBoxProps): React.ReactElement => {
             }
         }
         if (isOver) {
-            console.log("Calculated points: ", calculatePoints());
             const newLevel = await addPoints(calculatePoints());
             if (newLevel !== undefined && newLevel !== oldLevel) {
                 onLevelUp(oldLevel!, newLevel);
@@ -165,19 +155,6 @@ const AnswerBox = ({ onLevelUp }: AnswerBoxProps): React.ReactElement => {
                         {strikes === 3 && <ImCross style={{color: "red"}}/>}
                         {guessStep > 1 && strikes !== 3 && <IoIosCheckmark style={{color: "green"}}/>}
                     </div>
-                    {/*<select
-                        className="answer-box-operator-select"
-                        id="options"
-                        value={selectedRouteValue}
-                        onChange={handleRouteChange}
-                        disabled={guessStep !== 1 || strikes === 3}
-                        style={guessStep > 1 && strikes !== 3 ? {border: "1px solid green"} : {}}
-                    >
-                        <option value="">Choose an option...</option>
-                        {operatorData[selectedOperatorValue].map((route) => (
-                            <option value={route}>{route}</option>
-                        ))}
-                    </select>*/}
                     <Dropdown>
                         <Dropdown.Toggle disabled={guessStep !== 1 || strikes === 3} id="dropdown-basic" style={{ border: guessStep > 1 && strikes !== 3 ? "1px solid green" : "1px solid black",width: "100%", background: "none", color: "black", overflow: "hidden", textOverflow: "ellipsis"}}>
                             <span style={{ maxWidth: "100%"}}>{selectedRouteValue.length ? selectedRouteValue : "Select a route..."}</span>
@@ -208,7 +185,6 @@ const AnswerBox = ({ onLevelUp }: AnswerBoxProps): React.ReactElement => {
                     <span className="answer-box-submit-button-text">Lock it in!</span>
                 </button>
             )}
-
         </div>
     )
 }

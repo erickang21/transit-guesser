@@ -1,4 +1,4 @@
-import React, {createContext, useState, useContext, useEffect, useCallback} from 'react';
+import React, {createContext, useState, useEffect, useCallback} from 'react';
 import {Coordinate, RandomStopResponse} from "../types/types";
 import {getOperators, getRandomStop} from "../helpers/api";
 
@@ -9,7 +9,6 @@ type MainGameContextType = {
     getNewData: () => void;
 }
 
-// Create a Context for the theme (light/dark)
 const MainGameContext: React.Context<MainGameContextType> = createContext<MainGameContextType>({
     coordinates: [],
     correctAnswers: {},
@@ -17,7 +16,6 @@ const MainGameContext: React.Context<MainGameContextType> = createContext<MainGa
     getNewData: () => {},
 });
 
-// Create a ThemeProvider component to manage the theme state
 const MainGameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [coordinates, setCoordinates] = useState<Coordinate[]>([]);
     const [correctAnswers, setCorrectAnswers] = useState<Record<string, string[]>>({});
@@ -31,13 +29,11 @@ const MainGameProvider: React.FC<{ children: React.ReactNode }> = ({ children })
             setOperatorData((prev) => operators);
             setCoordinates((prev) => [...prev, { latitude: selectedStop.latitude, longitude: selectedStop.longitude }])
             setCorrectAnswers((prev) => selectedStop.correctRoutes);
-            console.log("Context called from API: ", selectedStop, operators)
         }
         if (!coordinates.length) fetchAllData();
     }, [coordinates.length]);
 
     const getNewData = useCallback(async () => {
-        console.log("getNewData called")
         const selectedStop: RandomStopResponse = await getRandomStop();
         const operators: Record<string, string[]> = await getOperators();
         setOperatorData((prev) => operators);

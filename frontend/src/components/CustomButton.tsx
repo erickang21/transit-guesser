@@ -1,12 +1,10 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
-import { Route, Navigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import "../css/components/CustomButton.css"
 import LoadingSpinner from "./LoadingSpinner";
 
 interface CustomButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    colorScheme?: 'primary' | 'secondary' | 'danger'; // Custom property for color scheme
+    colorScheme?: 'primary' | 'secondary' | 'danger';
     loading?: boolean;
     showBorder?: boolean;
 }

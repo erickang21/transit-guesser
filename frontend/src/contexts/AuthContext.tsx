@@ -62,10 +62,8 @@ export const AuthProvider = ({ children }: { children: React.ReactElement }) => 
         // If user has a token cached, log them back in
         if (token) {
             setIsAuthenticated(true);
-            console.log("Set authenticated true")
             setToken(token);
             const user = await loginOnReturn({ token} )
-            console.log("Ran this function", user)
             if (user.email !== undefined && user.username !== undefined && user.level !== undefined && user.points !== undefined) {
                 setEmail(user.email)
                 setUsername(user.username)
@@ -82,7 +80,6 @@ export const AuthProvider = ({ children }: { children: React.ReactElement }) => 
 
     const login = useCallback((credentials: AuthenticationResponse) => {
         if (credentials.token && credentials.username && credentials.level !== null && credentials.points !== null && credentials.email) {
-            console.log("Set authenticated")
             localStorage.setItem('authToken', credentials.token);
             setIsAuthenticated(true);
             setToken(credentials.token);

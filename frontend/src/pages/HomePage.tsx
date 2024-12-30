@@ -1,7 +1,5 @@
 import React from 'react';
 import CustomNavbar from '../components/Navbar';
-import Container from "react-bootstrap/Container";
-import Nav from "react-bootstrap/Nav";
 import "../css/HomePage.css";
 import { GameMode } from "../types/types";
 import { useNavigate } from "react-router-dom";

@@ -1,11 +1,7 @@
 import React, {FormEvent, useCallback, useState} from 'react';
-import Navbar from "react-bootstrap/Navbar";
-import Container from "react-bootstrap/Container";
-import Nav from "react-bootstrap/Nav";
 import "../css/HomePage.css";
 import "../css/LoginPage.css";
 import "../css/RegisterPage.css";
-import { GameMode } from "../types/types";
 import { useNavigate } from "react-router-dom";
 import {handleRegister} from "../helpers/api";
 import {useAuth} from "../contexts/AuthContext";
@@ -56,44 +52,6 @@ const RegisterPage = (): React.ReactElement => {
             <div className="home-main-section">
                 <h1 className="home-page-slogan">You're on the right route.</h1>
                 <h6 className="home-page-slogan-under">Sign up to collect points, level up your profile, and attain fame on the global leaderboard.</h6>
-                {/*<div className="login-form">
-                    <form onSubmit={handleSubmit} className="login-form-object">
-                        <div className="login-form-entry">
-                            <label className="login-form-label">Email:</label>
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
-                        <div className="login-form-entry">
-                            <label className="login-form-label">Username:</label>
-                            <input
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                            />
-                        </div>
-                        <div className="login-form-entry">
-                            <label className="login-form-label">Password:</label>
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </div>
-                        <div className="login-form-entry">
-                            <label className="login-form-label">Confirm Password:</label>
-                            <input
-                                type="password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                            />
-                        </div>
-                        <button type="submit">Sign Up</button>
-                        {error !== null && <span className="register-error">{error}</span>}
-                    </form>
-                </div>
-                */}
                 <Form className="login-form" onSubmit={handleSubmit} style={{ width: "70vw"}}>
                     <Form.Group className="mb-3 d-flex flex-column" controlId="formBasicEmail">
                         <Form.Label className="align-self-start">Email address</Form.Label>

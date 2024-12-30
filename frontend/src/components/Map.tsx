@@ -2,7 +2,6 @@
 import React, {useContext, useEffect} from "react";
 import {MapContainer, Popup, TileLayer, useMap} from "react-leaflet";
 import CustomMarker from "./CustomMarker";
-import { Coordinate } from "../types/types";
 import {MainGameContext} from "../contexts/MainGameContext";
 
 interface MapProps {
@@ -19,7 +18,6 @@ function MapCenter({ center }: { center: [number, number] }) {
 
 export default function Map({ zoom }: MapProps) {
     const { coordinates } = useContext(MainGameContext);
-    console.log("Coordinates detected for re-render: ", coordinates[coordinates.length - 1]?.latitude, coordinates[coordinates.length - 1]?.longitude);
     if (!coordinates.length) return (
         <div style={{width: "100vw"}}>
             <span>Loading...</span>

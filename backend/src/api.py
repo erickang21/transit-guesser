@@ -15,6 +15,7 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 dotenv_path = Path('../../../.env')
 load_dotenv(dotenv_path=dotenv_path)
 
+print("Starting app: ", __name__)
 app = Flask(__name__)
 CORS(app)
 try:

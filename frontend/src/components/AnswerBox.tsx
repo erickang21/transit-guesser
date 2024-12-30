@@ -88,9 +88,8 @@ const AnswerBox = ({ onLevelUp }: AnswerBoxProps): React.ReactElement => {
     ) : (
         <span className="answer-box-result-error" style={{color: 'darkred'}}>Round over. Better luck on the next!</span>
     )
-
     console.log("Rendered correct answers", correctAnswers)
-    console.log("Rendered operator data", operatorData)
+
     if (!Object.keys(correctAnswers).length || !Object.keys(operatorData).length) {
         return (
             <div className="answer-box">

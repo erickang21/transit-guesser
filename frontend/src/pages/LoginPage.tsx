@@ -26,7 +26,6 @@ const LoginPage = (): React.ReactElement => {
             ...(EMAIL_REGEX.test(email) ? { email, username: '' } : { username: email, email: ''})
         };
         const credentials = await handleLogin(params);
-        console.log("Credentials", credentials)
         setLoading(false);
         if (credentials.token !== null) {
             login(credentials);

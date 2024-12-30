@@ -5,7 +5,6 @@ import {RandomStopResponse, Route, Stop, AuthenticationResponse, AuthenticationR
 export const getAllStops = async (): Promise<Stop[]> => {
     const endpoints: Record<string, string> = process.env.NODE_ENV === "development" ? DevEndpoints : Endpoints;
     try {
-        console.log("endpoint ", endpoints.stops)
         const response = await axios.get(endpoints.stops);
         return response.data;
     } catch (err) {
@@ -115,7 +114,6 @@ export const handleRegister = async ({ email, password, username }: Authenticati
                 'Content-Type': 'application/json', // Ensure correct content type
             }
         });
-        console.log("response", response)
         if (response.data.success) {
             return {
                 success: true,

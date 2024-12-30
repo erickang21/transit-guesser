@@ -43,7 +43,7 @@ const RegisterPage = (): React.ReactElement => {
             const credentials = await handleRegister({ email, password, username });
             if (credentials.token !== null) {
                 login(credentials);
-                navigate("/game");
+                navigate("/game", { state: { showTutorial: true} });
             } else {
                 toast.error(credentials.error,{ position: 'top-center'})
             }

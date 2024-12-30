@@ -34,7 +34,7 @@ const MainGameProvider: React.FC<{ children: React.ReactNode }> = ({ children })
             console.log("Context called from API: ", selectedStop, operators)
         }
         if (!coordinates.length) fetchAllData();
-    }, []);
+    }, [coordinates.length]);
 
     const getNewData = useCallback(async () => {
         console.log("getNewData called")

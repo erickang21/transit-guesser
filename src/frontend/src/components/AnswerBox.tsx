@@ -10,7 +10,10 @@ import {RandomStopResponse} from "../types/types";
 import {MainGameContext} from "../contexts/MainGameContext";
 import {useAuth} from "../contexts/AuthContext";
 
-const AnswerBox = (): React.ReactElement => {
+type AnswerBoxProps = {
+    onLevelUp: (oldLevel: number, newLevel: number) => void;
+}
+const AnswerBox = ({ onLevelUp }: AnswerBoxProps): React.ReactElement => {
     // Game mechanics
     const [guessStep, setGuessStep] = useState(0);
     const [guessed, setGuessed] = useState(true);
@@ -21,7 +24,7 @@ const AnswerBox = (): React.ReactElement => {
     const [selectedRouteValue, setSelectedRouteValue] = useState('');
 
     const { correctAnswers, operatorData, getNewData } = useContext(MainGameContext);
-    const { addPoints } = useAuth();
+    const { addPoints, level } = useAuth();
 
     const roundOver = useMemo(() => strikes === 3 || guessStep === 2, [strikes, guessStep]);
 
@@ -39,7 +42,8 @@ const AnswerBox = (): React.ReactElement => {
         return basePoints;
     }, [strikes]);
 
-    const verifyGuess = useCallback(() => {
+    const verifyGuess = useCallback(async () => {
+        const oldLevel = level;
         setWrongAnswer(false);
         setGuessed(true);
         let isOver = false;
@@ -69,9 +73,12 @@ const AnswerBox = (): React.ReactElement => {
         }
         if (isOver) {
             console.log("Calculated points: ", calculatePoints());
-            addPoints(calculatePoints());
+            const newLevel = await addPoints(calculatePoints());
+            if (newLevel !== undefined && newLevel !== oldLevel) {
+                onLevelUp(oldLevel!, newLevel);
+            }
         }
-    }, [guessStep, correctAnswers, selectedOperatorValue, strikes, selectedRouteValue, calculatePoints, addPoints])
+    }, [guessStep, correctAnswers, selectedOperatorValue, strikes, selectedRouteValue, calculatePoints, addPoints, level])
 
     const goToNextRound = useCallback(() => {
         setStrikes(0);

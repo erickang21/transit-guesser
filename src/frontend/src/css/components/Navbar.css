@@ -44,3 +44,22 @@ div[aria-labelledby="dropdown-basic-button"].dropdown-menu {
     position: absolute;
     left: -50px;
 }
+
+.tutorial-panel {
+    border: 1px solid black;
+    border-radius: 4px;
+    padding: 1rem;
+    width: 20vw;
+    height: 50vh;
+}
+
+.tutorial-image {
+    border: 1px solid black;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    object-fit: cover;
+    object-position: top;
+    width: 100%;
+    height: 44%;
+}

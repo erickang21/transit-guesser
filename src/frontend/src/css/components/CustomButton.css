@@ -5,7 +5,10 @@
     padding: 10px 20px;
     border: none;
     cursor: pointer;
-    background-color: #3498db !important;
+}
+
+.noborder:hover {
+    background-color: transparent !important;
 }
 
 .custom-button:hover {

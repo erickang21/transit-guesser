@@ -177,7 +177,7 @@ const AnswerBox = ({ onLevelUp }: AnswerBoxProps): React.ReactElement => {
                 </div>
             )}
             {strikes === 3 || guessStep === 2 ? (
-                <button className="answer-box-submit-button" style={{color: "yellow"}} onClick={goToNextRound}>
+                <button className="answer-box-submit-button" style={{color: "white"}} onClick={goToNextRound}>
                     <span className="answer-box-submit-button-text">Next one!</span>
                 </button>
             ) : (

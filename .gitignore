@@ -8,30 +8,30 @@
 *.env
 
 # dependencies
-/src/frontend/node_modules
-/src/frontend/.pnp
-/src/frontend/.pnp.js
+/frontend/node_modules
+/frontend/.pnp
+/frontend/.pnp.js
 
 # testing
-/src/frontend/coverage
+/frontend/coverage
 
 # production
 /build
 
 # misc
-/src/frontend/.DS_Store
-/src/frontend/.env.local
-/src/frontend/.env.development.local
-/src/frontend/.env.test.local
-/src/frontend/.env.production.local
+/frontend/.DS_Store
+/frontend/.env.local
+/frontend/.env.development.local
+/frontend/.env.test.local
+/frontend/.env.production.local
 
-/src/frontend/npm-debug.log*
-/src/frontend/yarn-debug.log*
-/src/frontend/yarn-error.log*
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
 
 # cache
-/src/backend/src/cache
-/src/backend/src/__pycache__
+/backend/src/cache
+/backend/src/__pycache__
 
 #log files
 *.log

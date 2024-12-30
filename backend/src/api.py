@@ -12,7 +12,7 @@ from pathlib import Path
 from flask_cors import CORS
 from cachetools import TTLCache
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, create_refresh_token
-dotenv_path = Path('../../../.env')
+dotenv_path = Path('../.env')
 load_dotenv(dotenv_path=dotenv_path)
 
 print("Starting app: ", __name__)

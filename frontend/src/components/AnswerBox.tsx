@@ -68,7 +68,7 @@ const AnswerBox = ({ onLevelUp }: AnswerBoxProps): React.ReactElement => {
                 onLevelUp(oldLevel!, newLevel);
             }
         }
-    }, [guessStep, correctAnswers, selectedOperatorValue, strikes, selectedRouteValue, calculatePoints, addPoints, level])
+    }, [level, guessStep, correctAnswers, selectedOperatorValue, strikes, selectedRouteValue, addPoints, calculatePoints, onLevelUp])
 
     const goToNextRound = useCallback(() => {
         setStrikes(0);

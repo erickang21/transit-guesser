@@ -26,7 +26,7 @@ const HomePage = (): React.ReactElement => {
                             {gameModes.map((gameMode) => (
                                 <div className="game-mode-display">
                                     <h3>{gameMode.name}</h3>
-                                    <img style={{alignSelf: "center", margin: "1rem 0"}}
+                                    <img alt="subway" style={{alignSelf: "center", margin: "1rem 0"}}
                                          src="https://i.postimg.cc/BQND66YQ/IMG-3210.jpg" width="75%" height="65%"/>
                                     <span>{gameMode.description}</span>
                                     <button className="game-mode-play" onClick={() => navigate(isAuthenticated ? "/game" : "/login")}>

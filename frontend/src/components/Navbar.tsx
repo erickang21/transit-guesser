@@ -33,7 +33,7 @@ type CustomNavbarProps = {
 };
 
 const CustomNavbar = ({ showTutorial = false, showTutorialIcon = false }: CustomNavbarProps) => {
-    const { email, username, level, points, logout, isAuthenticated } = useAuth();
+    const { email, username, level, points, logout } = useAuth();
     const navigate = useNavigate();
     const routerLocation = useLocation();
     const levelUpProgress = useMemo(() => (points! / pointsForLevel(level!)) * 100, [points, level])

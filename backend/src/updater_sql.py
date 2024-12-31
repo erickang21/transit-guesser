@@ -16,20 +16,34 @@ logging.basicConfig(filename='updater_sql.log', encoding='utf-8', level=logging.
 class SQLEmulator:
     # this class will "abstract out" some of the details of the SQL calls, since we don't really need the full amount of flexibility
     # instead our calls will be similar to how we did it with Mongo, but it will be interfacing with a relational DB underneath
-    def __init__(self, conn):
-        self.connector = conn
+    def __init__(self, db):
+        self.db = db
+
+    def newStopsLocation(self, aid): # creates a stops table for a new location
+        cur = self.db.cursor()
+        schema = ("("
+                  "id BIGINT(255) NOT NULL, "
+                  "latitude FLOAT(53), "
+                  "longitude FLOAT(53), "
+                  "name VARCHAR(255), "
+                  "network VARCHAR(255), "
+                  "operator VARCHAR(255), "
+                  "inaccurateReports INT(255), "
+                  "routes VARCHAR(255)"
+                  ")")
+        cur.execute("CREATE TABLE s"+str(aid)+schema)
 
 class UpdaterSQL:
 
     def __init__(self):
         self.ovp = op.Overpass()
         self.api = ap.Api() #get the query self.api (simpler self.api for when we want to find individual nodes, rather than by attribute)
-        self.connector = mysql.connector.connect(
+        self.db = mysql.connector.connect(
             host=os.getenv("sqlhost"),
             user=os.getenv("sqluser"),
             password=os.getenv("sqlpass")
         )
-        self.emu = SQLEmulator(self.connector)
+        self.emu = SQLEmulator(self.db)
         #self.pym = pm.MongoClient(os.getenv("mongodb"))
         #self.db = self.pym["transitguesser"]
         #self.routes_collection = self.db["routes"]
@@ -160,6 +174,6 @@ class UpdaterSQL:
 if __name__ == "__main__":
     nom = nm.Nominatim()
     areaID = nom.query("Kitchener, Ontario").areaId()
-    updater = Updater()
+    updater = UpdaterSQL()
     updater.updateStops(areaID)
     updater.updateRoutes(areaID)

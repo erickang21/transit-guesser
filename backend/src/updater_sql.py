@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 import logging
 import time
-import sqlite3
+import mysql.connector
 dotenv_path = Path('../../../.env')
 load_dotenv(dotenv_path=dotenv_path)
 logger = logging.getLogger(__name__)
@@ -16,16 +16,24 @@ logging.basicConfig(filename='updater_sql.log', encoding='utf-8', level=logging.
 class SQLEmulator:
     # this class will "abstract out" some of the details of the SQL calls, since we don't really need the full amount of flexibility
     # instead our calls will be similar to how we did it with Mongo, but it will be interfacing with a relational DB underneath
+    def __init__(self, conn):
+        self.connector = conn
 
 class UpdaterSQL:
 
     def __init__(self):
         self.ovp = op.Overpass()
         self.api = ap.Api() #get the query self.api (simpler self.api for when we want to find individual nodes, rather than by attribute)
-        self.pym = pm.MongoClient(os.getenv("mongodb"))
-        self.db = self.pym["transitguesser"]
-        self.routes_collection = self.db["routes"]
-        self.stops_collection = self.db["stops"]
+        self.connector = mysql.connector.connect(
+            host=os.getenv("sqlhost"),
+            user=os.getenv("sqluser"),
+            password=os.getenv("sqlpass")
+        )
+        self.emu = SQLEmulator(self.connector)
+        #self.pym = pm.MongoClient(os.getenv("mongodb"))
+        #self.db = self.pym["transitguesser"]
+        #self.routes_collection = self.db["routes"]
+        #self.stops_collection = self.db["stops"]
 
     def updateStops(self, aid):
         #logging variables

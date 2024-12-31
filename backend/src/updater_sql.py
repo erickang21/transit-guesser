@@ -19,19 +19,52 @@ class SQLEmulator:
     def __init__(self, db):
         self.db = db
 
-    def newStopsLocation(self, aid): # creates a stops table for a new location
+    def __newStopsLocation(self, aid): # creates a stops table for a new location
         cur = self.db.cursor()
+        tablename = "stops"+str(aid)
         schema = ("("
-                  "id BIGINT(255) NOT NULL, "
+                  "id BIGINT(255) PRIMARY KEY, "
                   "latitude FLOAT(53), "
                   "longitude FLOAT(53), "
                   "name VARCHAR(255), "
                   "network VARCHAR(255), "
                   "operator VARCHAR(255), "
-                  "inaccurateReports INT(255), "
-                  "routes VARCHAR(255)"
+                  "inaccurateReports INT(255)"
                   ")")
-        cur.execute("CREATE TABLE s"+str(aid)+schema)
+        cur.execute(f"CREATE TABLE {tablename} {schema}")
+
+    def __newRoutesLocation(self, aid):
+        cur = self.db.cursor()
+        tablename = "routes"+str(aid)
+        schema = ("("
+                  "id BIGINT(255) PRIMARY KEY, "
+                  "number VARCHAR(255), " #usually it's a number but sometimes there's letters on it like 102A, so it's a string
+                  "name VARCHAR(255), "
+                  "network VARCHAR(255), "
+                  "operator VARCHAR(255), "
+                  "type VARCHAR(255), "
+                  "inaccurateReports INT(255)"
+                  ")")
+        cur.execute(f"CREATE TABLE {tablename} {schema}")
+
+    def __newLinksLocation(self, aid):
+        cur = self.db.cursor()
+        tablename = "links"+str(aid)
+        rtname = "routes"+str(aid)
+        stname = "stops"+str(aid)
+        schema = ("("
+                  "routeid BIGINT(255), "
+                  "stopid BIGINT(255), "
+                  "PRIMARY KEY (routeid, stopid), "
+                  f"FOREIGN KEY (routeid) REFERENCES {rtname}(id), "
+                  f"FOREIGN KEY (stopid) REFERENCES {stname}(id)"
+                  ")")
+        cur.execute(f"CREATE TABLE {tablename} {schema}")
+
+    def newLocation(self, aid):
+        self.__newRoutesLocation(aid)
+        self.__newStopsLocation(aid)
+        self.__newLinksLocation(aid) #this must be done after as it links the two previously created tables
 
 class UpdaterSQL:
 

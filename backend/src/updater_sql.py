@@ -19,9 +19,9 @@ class SQLEmulator:
     def __init__(self, db):
         self.db = db
 
-    def __newStopsLocation(self, aid): # creates a stops table for a new location
+    def __newStops(self): # creates a stops table for a new location
         cur = self.db.cursor()
-        tablename = "stops"+str(aid)
+        tablename = "stops"
         schema = ("("
                   "id BIGINT(255) PRIMARY KEY, "
                   "latitude FLOAT(53), "
@@ -33,9 +33,9 @@ class SQLEmulator:
                   ")")
         cur.execute(f"CREATE TABLE {tablename} {schema}")
 
-    def __newRoutesLocation(self, aid):
+    def __newRoutes(self):
         cur = self.db.cursor()
-        tablename = "routes"+str(aid)
+        tablename = "routes"
         schema = ("("
                   "id BIGINT(255) PRIMARY KEY, "
                   "number VARCHAR(255), " #usually it's a number but sometimes there's letters on it like 102A, so it's a string
@@ -47,11 +47,11 @@ class SQLEmulator:
                   ")")
         cur.execute(f"CREATE TABLE {tablename} {schema}")
 
-    def __newLinksLocation(self, aid):
+    def __newLinks(self):
         cur = self.db.cursor()
-        tablename = "links"+str(aid)
-        rtname = "routes"+str(aid)
-        stname = "stops"+str(aid)
+        tablename = "links"
+        rtname = "routes"
+        stname = "stops"
         schema = ("("
                   "routeid BIGINT(255), "
                   "stopid BIGINT(255), "
@@ -61,10 +61,10 @@ class SQLEmulator:
                   ")")
         cur.execute(f"CREATE TABLE {tablename} {schema}")
 
-    def newLocation(self, aid):
-        self.__newRoutesLocation(aid)
-        self.__newStopsLocation(aid)
-        self.__newLinksLocation(aid) #this must be done after as it links the two previously created tables
+    def makeNew(self):
+        self.__newRoutes()
+        self.__newStops()
+        self.__newLinks() #this must be done after as it links the two previously created tables
 
 class UpdaterSQL:
 

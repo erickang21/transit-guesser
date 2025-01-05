@@ -4,7 +4,7 @@ A web game to allow people to guess transit routes in the GTA from landmarks, he
 
 **The web game is LIVE at https://transitguesser.me!**
 
-## Tech Stack:
+### Tech Stack:
 [![React](https://img.shields.io/badge/React-%2320232a.svg?logo=react&logoColor=%2361DAFB)](#)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=fff)](#)
 [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](#)

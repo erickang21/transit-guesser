@@ -18,6 +18,11 @@ class SQLEmulator:
     # instead our calls will be similar to how we did it with Mongo, but it will be interfacing with a relational DB underneath
     def __init__(self, db):
         self.db = db
+        cur = self.db.cursor()
+        stopsExists = "stops" in cur.execute("SHOW TABLES LIKE 'stops'")
+        routesExists = "routes" in cur.execute("SHOW TABLES LIKE 'routes'")
+        linksExists = "links" in cur.execute("SHOW TABLES LIKE 'links'")
+        self.inited = stopsExists and routesExists and linksExists
 
     def __newStops(self): # creates a stops table for a new location
         cur = self.db.cursor()
@@ -65,6 +70,26 @@ class SQLEmulator:
         self.__newRoutes()
         self.__newStops()
         self.__newLinks() #this must be done after as it links the two previously created tables
+        self.inited = True
+
+    def upsertStop(self, data):
+        if not self.inited:
+            return False
+        if not all(k in data for k in ("_id","latitude","longitude","name","network","operator","inaccurateReports")):
+            return False
+        cur = self.db.cursor()
+        stopsQuery = ("REPLACE INTO 'stops' SET "
+                     f"'id' = '{data["_id"]}', "
+                     f"'latitude' = '{data["latitude"]}', "
+                     f"'longitude' = '{data["longitude"]}', "
+                     f"'name' = '{data["name"]}', "
+                     f"'network' = '{data["network"]}', "
+                     f"'operator' = '{data["operator"]}', "
+                     f"'inaccurateReports' = '{data["inaccurateReports"]}'; ")
+        linksQuery = ("") #don't know how to do this one yet, should update the relation from this stop to all its routes
+        cur.execute(stopsQuery+linksQuery)
+
+
 
 class UpdaterSQL:
 

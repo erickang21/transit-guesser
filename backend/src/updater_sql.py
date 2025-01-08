@@ -8,6 +8,7 @@ from pathlib import Path
 import logging
 import time
 import mysql.connector
+from pypika import MySQLQuery, Table, Field
 dotenv_path = Path('../../../.env')
 load_dotenv(dotenv_path=dotenv_path)
 logger = logging.getLogger(__name__)
@@ -75,20 +76,46 @@ class SQLEmulator:
     def upsertStop(self, data):
         if not self.inited:
             return False
-        if not all(k in data for k in ("_id","latitude","longitude","name","network","operator","inaccurateReports")):
+        if not all(k in data for k in ("_id","latitude","longitude","number","name","network","operator","routes","inaccurateReports")):
             return False
         cur = self.db.cursor()
-        stopsQuery = ("REPLACE INTO 'stops' SET "
-                     f"'id' = '{data["_id"]}', "
-                     f"'latitude' = '{data["latitude"]}', "
-                     f"'longitude' = '{data["longitude"]}', "
-                     f"'name' = '{data["name"]}', "
-                     f"'network' = '{data["network"]}', "
-                     f"'operator' = '{data["operator"]}', "
-                     f"'inaccurateReports' = '{data["inaccurateReports"]}'; ")
-        linksQuery = ("") #don't know how to do this one yet, should update the relation from this stop to all its routes
+        stable = Table('stops')
+        q1 = MySQLQuery.into(stable).replace(
+            int(data["_id"]), 
+            float(data["latitude"]), 
+            float(data["longitude"]), 
+            str(data["name"]), 
+            str(data["network"]), 
+            str(data["operator"]), 
+            int(data["inaccurateReports"])
+            )
+        stopsQuery = str(q1)
+        ltable = Table('links')
+        q2 = None
+        linksQuery = str(q2) #don't know how to do this one yet, should update the relation from this stop to all its routes
         cur.execute(stopsQuery+linksQuery)
-
+    
+    def upsertRoute(self, data):
+        if not self.inited:
+            return False
+        if not all(k in data for k in ("_id","number","name","network","operator","type","stops","inaccurateReports")):
+            return False
+        cur = self.db.cursor()
+        rtable = Table('routes')
+        q1 = MySQLQuery.into(rtable).replace(
+            int(data["_id"]), 
+            str(data["number"]), 
+            str(data["name"]), 
+            str(data["network"]), 
+            str(data["operator"]), 
+            str(data["type"]), 
+            int(data["inaccurateReports"])
+            )
+        routesQuery = str(q1)
+        ltable = Table('links')
+        q2 = None
+        linksQuery = str(q2) #don't know how to do this one yet, should update the relation from this stop to all its routes
+        cur.execute(routesQuery+linksQuery)
 
 
 class UpdaterSQL:
